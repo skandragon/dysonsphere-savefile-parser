@@ -25,7 +25,7 @@ func parseGameData(b *Buffer) {
 
 	b.GetInt32le() // planetId
 
-	parseMainPlayer(b)
+	parsePlayer(b)
 
 	factoryCount := b.GetInt32le()
 

@@ -23,10 +23,7 @@ func (g *gameDesc) Dump() {
 }
 
 func parseGameDesc(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 2 {
-		panic(fmt.Sprintf("Unknown GameDesc version: %d", vers))
-	}
+	checkVers(b, 2, "GameDesc")
 
 	galaxyAlgo := b.GetInt32le()
 	galaxySeed := b.GetInt32le()

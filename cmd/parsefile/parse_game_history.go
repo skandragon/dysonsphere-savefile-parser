@@ -3,17 +3,16 @@ package main
 import "fmt"
 
 func parseGameHistory(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 2 {
-		panic(fmt.Sprintf("Unknown GameHistory version: %d", vers))
-	}
+	checkVers(b, 2, "GameHistory")
 
 	// TODO: parse recipeUnlocked
 	count := b.GetInt32le()
 	fmt.Printf("Unlocked recipe count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 
 	// TODO: parse tutorialUnlocked
@@ -21,7 +20,9 @@ func parseGameHistory(b *Buffer) {
 	fmt.Printf("Tutorial unlocked count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 
 	// TODO: parse featureKeys
@@ -29,7 +30,9 @@ func parseGameHistory(b *Buffer) {
 	fmt.Printf("Feature keys count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 
 	// TODO: parse techStates
@@ -54,7 +57,9 @@ func parseGameHistory(b *Buffer) {
 	fmt.Printf("Tech queue length: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 
 	b.GetInt32le() // universeObserveLevel

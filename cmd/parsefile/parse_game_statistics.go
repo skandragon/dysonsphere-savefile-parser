@@ -3,10 +3,7 @@ package main
 import "fmt"
 
 func parseGameStatistics(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 0 {
-		panic(fmt.Sprintf("Unknown GameStatistics version: %d", vers))
-	}
+	checkVers(b, 0, "GameStatistics")
 
 	count := b.GetInt32le()
 	fmt.Printf("Statistics: count of hashedTechHistory: %d\n", count)

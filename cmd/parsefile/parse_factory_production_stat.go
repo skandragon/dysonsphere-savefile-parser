@@ -3,15 +3,12 @@ package main
 import "fmt"
 
 func parseFactoryProductionStat(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 1 {
-		panic(fmt.Sprintf("Unknown FactoryProductionStat version: %d\n", vers))
-	}
+	checkVers(b, 1, "FactoryProductionStat")
 
 	productCapacity := b.GetInt32le()
 	productCursor := b.GetInt32le()
 	fmt.Printf("productCursor (count) %d, productCapacity %d\n", productCursor, productCapacity)
-	for i := 0; int32(i) < productCursor; i++ {
+	for i := 1; int32(i) < productCursor; i++ {
 		parseProductStat(b)
 	}
 
@@ -23,10 +20,10 @@ func parseFactoryProductionStat(b *Buffer) {
 	count = b.GetInt32le()
 	fmt.Printf("productionIndicies (count): %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		c := b.GetInt32le()
-		fmt.Printf("  %d %d", i, c)
+		b.GetInt32le()
+		//fmt.Printf("  %d %d\n", i, c)
 	}
 
-	powerProduction := b.GetInt64le()
-	fmt.Printf("Power production: %d\n", powerProduction)
+	energyConsumption := b.GetInt64le()
+	fmt.Printf("energyConsumption: %d\n", energyConsumption)
 }

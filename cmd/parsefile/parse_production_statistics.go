@@ -3,10 +3,7 @@ package main
 import "fmt"
 
 func parseProductionStatistics(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 0 {
-		panic(fmt.Sprintf("Unknown ProductionStatistics version: %d", vers))
-	}
+	checkVers(b, 0, "ProductionStatistics")
 
 	count := b.GetInt32le()
 	fmt.Printf("factory production stat count: %d\n", count)
@@ -18,13 +15,17 @@ func parseProductionStatistics(b *Buffer) {
 	fmt.Printf("firstCreateIds count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 
 	count = b.GetInt32le()
 	fmt.Printf("favoriteIds count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
 		id := b.GetInt32le()
-		fmt.Printf("   id: %d\n", id)
+		if id != 0 {
+			fmt.Printf("   id: %d\n", id)
+		}
 	}
 }

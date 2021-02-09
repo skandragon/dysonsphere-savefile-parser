@@ -1,12 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func parseGameData(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 2 {
-		panic(fmt.Sprintf("Unknown GameData version: %d", vers))
-	}
+	checkVers(b, 2, "GameData")
 
 	gamename := b.GetString()
 	fmt.Printf("Save file name: %s\n", gamename)

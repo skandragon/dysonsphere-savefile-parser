@@ -3,10 +3,7 @@ package main
 import "fmt"
 
 func parseGamePreferences(b *Buffer) {
-	vers := b.GetInt32le()
-	if vers != 2 {
-		panic(fmt.Sprintf("Unknown GamePreferences version: %d", vers))
-	}
+	checkVers(b, 2, "GamePreferences")
 
 	cameraX := b.GetFloat64()
 	cameraY := b.GetFloat64()

@@ -19,7 +19,7 @@ func checkVers(b *Buffer, expected int32, name string) {
 	vers := b.GetInt32le()
 	//fmt.Printf("Parsing %s, vers %d...\n", name, vers)
 	if vers != expected {
-		panic(fmt.Sprintf("Unknown %s version: %d, expected %d", name, vers, expected))
+		panic(fmt.Sprintf("Unknown %s version: %d, expected %d, offset 0x%x", name, vers, expected, b.pos))
 	}
 }
 
@@ -27,6 +27,6 @@ func checkVersByte(b *Buffer, expected byte, name string) {
 	vers := b.GetByte()
 	//fmt.Printf("Parsing %s, vers %d...\n", name, vers)
 	if vers != expected {
-		panic(fmt.Sprintf("Unknown %s version: %d, expected %d", name, vers, expected))
+		panic(fmt.Sprintf("Unknown %s version: %d, expected %d, offset 0x%x", name, vers, expected, b.pos))
 	}
 }

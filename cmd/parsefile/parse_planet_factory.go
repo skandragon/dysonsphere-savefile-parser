@@ -2,8 +2,21 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
+
+type EntityAnimation struct {
+	time          float32
+	prepareLength float32
+	workingLength float32
+	state         uint32
+	power         float32
+}
+
+func (e *EntityAnimation) String() string {
+	return fmt.Sprintf("EntityAnim{%f,%f,%f,%d,%f}",
+		e.time, e.prepareLength, e.workingLength,
+		e.state, e.power)
+}
 
 func parsePlanetFactory(b *Buffer, i int) {
 	checkVers(b, 1, "PlanetFactory")
@@ -21,13 +34,17 @@ func parsePlanetFactory(b *Buffer, i int) {
 	for i := 1; int32(i) < entityCursor; i++ {
 		parseEntityData(b)
 	}
+	entityAnimations := make([]*EntityAnimation, entityCursor)
 	for i := 1; int32(i) < entityCursor; i++ {
-		b.GetFloat32()  // entityAnimPool.time
-		b.GetFloat32()  // entityAnimPool.prepare_length
-		b.GetFloat32()  // entityAnimPool.working_length
-		b.GetUInt32le() // entityAnimPool.state
-		b.GetFloat32()  // entityAnimPool.power
+		entityAnimations[i] = &EntityAnimation{
+			time:          b.GetFloat32(),
+			prepareLength: b.GetFloat32(),
+			workingLength: b.GetFloat32(),
+			state:         b.GetUInt32le(),
+			power:         b.GetFloat32(),
+		}
 	}
+	//fmt.Printf(" entityAnimations: %v\n", entityAnimations)
 	for i := 1; int32(i) < entityCursor; i++ {
 		b.GetUInt32le() // entitySignPool[k].signType)
 		b.GetUInt32le() // entitySignPool[k].iconType)
@@ -103,7 +120,6 @@ func parsePlanetFactory(b *Buffer, i int) {
 	parseCargoTraffic(b)
 	parseFactoryStorage(b)
 	parsePowerSystem(b)
-	os.Exit(1)
 	parseFactorySystem(b)
 	parsePlanetTransport(b)
 	parseMonsterSystem(b)
@@ -381,7 +397,26 @@ func parseCargoPath(b *Buffer) {
 }
 
 func parseTankComponent(b *Buffer) {
+	checkVers(b, 0, "TankComponent")
 
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetInt32le() // lastTankId = r.ReadInt32();
+	b.GetInt32le() // nextTankId = r.ReadInt32();
+	b.GetInt32le() // belt0 = r.ReadInt32();
+	b.GetInt32le() // belt1 = r.ReadInt32();
+	b.GetInt32le() // belt2 = r.ReadInt32();
+	b.GetInt32le() // belt3 = r.ReadInt32();
+	b.GetBoolean() // isOutput0 = r.ReadBoolean();
+	b.GetBoolean() // isOutput1 = r.ReadBoolean();
+	b.GetBoolean() // isOutput2 = r.ReadBoolean();
+	b.GetBoolean() // isOutput3 = r.ReadBoolean();
+	b.GetInt32le() // fluidStorageCount = r.ReadInt32();
+	b.GetInt32le() // currentCount = r.ReadInt32();
+	b.GetInt32le() // fluidId = r.ReadInt32();
+	b.GetBoolean() // outputSwitch = r.ReadBoolean();
+	b.GetBoolean() // inputSwitch = r.ReadBoolean();
+	b.GetBoolean() // isBottom = r.ReadBoolean();
 }
 
 func parseFactoryStorage(b *Buffer) {
@@ -395,17 +430,20 @@ func parseFactoryStorage(b *Buffer) {
 	for i := 1; int32(i) < storageCursor; i++ {
 		id := b.GetInt32le()
 		if id != 0 {
+			if id != int32(i) {
+				panic(fmt.Sprintf("id != i (%d, %d)", id, i))
+			}
 			size := b.GetInt32le()
 			fmt.Printf("  storage size %d\n", size)
 			parseStorageComponent(b)
 		}
 	}
-	for i := 0; int32(i) < storageRecycleCursor; i++ {
+	for i := int32(0); i < storageRecycleCursor; i++ {
 		b.GetInt32le() // recycle id?
 	}
 
-	tankCursor := b.GetInt32le()
 	tankCapacity := b.GetInt32le()
+	tankCursor := b.GetInt32le()
 	tankRecycleCursor := b.GetInt32le()
 	fmt.Printf("Tank cursor %d, capacity %d, recycleCursor %d\n",
 		tankCursor, tankCapacity, tankRecycleCursor)
@@ -486,7 +524,7 @@ func parsePowerSystem(b *Buffer) {
 	networkRecycleCursor := b.GetInt32le()
 	fmt.Printf(" network: capacity %d, cursor %d, recycleCursor %d\n",
 		networkCapacity, networkCursor, networkRecycleCursor)
-	for i := 1; int32(i) < networkCursor; i++ {
+	for i := 0; int32(i) < networkCursor; i++ {
 		if b.GetInt32le() == 1 {
 			parsePowerNetwork(b)
 		}
@@ -494,7 +532,6 @@ func parsePowerSystem(b *Buffer) {
 	for i := 0; int32(i) < networkRecycleCursor; i++ {
 		b.GetInt32le() // recycle id?
 	}
-
 }
 
 func parsePowerGeneratorComponent(b *Buffer) {
@@ -633,21 +670,611 @@ func parsePowerNetwork(b *Buffer) {
 }
 
 func parseNode(b *Buffer) {
-	os.Exit(1)
+	checkVers(b, 0, "Node")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetFloat32() // x = r.ReadSingle();
+	b.GetFloat32() // y = r.ReadSingle();
+	b.GetFloat32() // z = r.ReadSingle();
+	b.GetFloat32() // connDistance2 = r.ReadSingle();
+	b.GetFloat32() // coverRadius2 = r.ReadSingle();
+	b.GetInt32le() // genId = r.ReadInt32();
+	b.GetInt32le() // accId = r.ReadInt32();
+	b.GetInt32le() // excId = r.ReadInt32();
+	connectionCount := b.GetInt32le()
+	lineCount := b.GetInt32le()
+	consumerCount := b.GetInt32le()
+
+	for i := 0; int32(i) < connectionCount; i++ {
+		b.GetInt32le() // id
+	}
+
+	for i := 0; int32(i) < lineCount; i++ {
+		b.GetInt32le() // id
+	}
+
+	for i := 0; int32(i) < consumerCount; i++ {
+		b.GetInt32le() // id
+	}
 }
 
 func parseFactorySystem(b *Buffer) {
+	checkVers(b, 0, "FactorySystem")
 
+	minerCapacity := b.GetInt32le() // minerCapacity
+	minerCursor := b.GetInt32le()
+	minerRecycleCursor := b.GetInt32le()
+	fmt.Printf("miner: capacity %d, cursor %d, recycleCursor %d\n",
+		minerCapacity, minerCursor, minerRecycleCursor)
+	for i := uint32(1); i < uint32(minerCursor); i++ {
+		parseMinerComponent(b)
+	}
+	for i := int32(0); i < minerRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	inserterCapacity := b.GetInt32le()
+	inserterCursor := b.GetInt32le()
+	inserterRecycleCursor := b.GetInt32le()
+	fmt.Printf("inserter: capacity %d, cursor %d, recycleCursor %d\n",
+		inserterCapacity, inserterCursor, inserterRecycleCursor)
+	for i := int32(1); i < inserterCursor; i++ {
+		parseInserterComponent(b)
+	}
+	for i := int32(0); i < inserterRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	assemblerCapacity := b.GetInt32le()
+	assemblerCursor := b.GetInt32le()
+	assemblerRecycleCursor := b.GetInt32le()
+	fmt.Printf("assembler: capacity %d, cursor %d, recycleCursor %d\n",
+		assemblerCapacity, assemblerCursor, assemblerRecycleCursor)
+	for i := uint32(1); i < uint32(assemblerCursor); i++ {
+		parseAssemblerComponent(b)
+	}
+	for i := int32(0); i < assemblerRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	fractionateCapacity := b.GetInt32le()
+	fractionateCursor := b.GetInt32le()
+	fractionateRecycleCursor := b.GetInt32le()
+	fmt.Printf("fractionate: capacity %d, cursor %d, recycleCursor %d\n",
+		fractionateCapacity, fractionateCursor, fractionateRecycleCursor)
+	for i := uint32(1); i < uint32(fractionateCursor); i++ {
+		parseFractionateComponent(b)
+	}
+	for i := int32(0); i < fractionateRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	ejectorCapacity := b.GetInt32le()
+	ejectorCursor := b.GetInt32le()
+	ejectorRecycleCursor := b.GetInt32le()
+	fmt.Printf("ejector: capacity %d, cursor %d, recycleCursor %d\n",
+		ejectorCapacity, ejectorCursor, ejectorRecycleCursor)
+	for i := uint32(1); i < uint32(ejectorCursor); i++ {
+		parseEjectorComponent(b)
+	}
+	for i := int32(0); i < ejectorRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	siloCapacity := b.GetInt32le()
+	siloCursor := b.GetInt32le()
+	siloRecycleCursor := b.GetInt32le()
+	fmt.Printf("silo: capacity %d, cursor %d, recycleCursor %d\n",
+		siloCapacity, siloCursor, siloRecycleCursor)
+	for i := uint32(1); i < uint32(siloCursor); i++ {
+		parseSiloComponent(b)
+	}
+	for i := int32(0); i < siloRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+
+	labCapacity := b.GetInt32le()
+	labCursor := b.GetInt32le()
+	labRecycleCursor := b.GetInt32le()
+	fmt.Printf("lab: capacity %d, cursor %d, recycleCursor %d\n",
+		labCapacity, labCursor, labRecycleCursor)
+	for i := uint32(1); i < uint32(labCursor); i++ {
+		parseLabComponent(b)
+	}
+	for i := int32(0); i < labRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+}
+
+func parseMinerComponent(b *Buffer) {
+	checkVers(b, 0, "MinerComponent")
+
+	b.GetInt32le()       // id = r.ReadInt32();
+	b.GetInt32le()       // entityId = r.ReadInt32();
+	b.GetInt32le()       // pcId = r.ReadInt32();
+	ty := b.GetInt32le() // type = (EMinerType)r.ReadInt32();
+	fmt.Printf("Miner type %d (%s)\n", ty, MinerType(ty))
+	b.GetInt32le() // speed = r.ReadInt32();
+	b.GetInt32le() // time = r.ReadInt32();
+	b.GetInt32le() // period = r.ReadInt32();
+	b.GetInt32le() // insertTarget = r.ReadInt32();
+	b.GetInt32le() // workstate = (EWorkState)r.ReadInt32();
+	veinCount := b.GetInt32le()
+	for i := int32(0); i < veinCount; i++ {
+		b.GetInt32le() // veinID
+	}
+
+	b.GetInt32le() // currentVeinIndex = r.ReadInt32();
+	b.GetInt32le() // minimumVeinAmount = r.ReadInt32();
+	b.GetInt32le() // productId = r.ReadInt32();
+	b.GetInt32le() // productCount = r.ReadInt32();
+	b.GetInt32le() // seed = r.ReadUInt32();
+}
+
+func parseInserterComponent(b *Buffer) {
+	checkVers(b, 0, "InserterComponent")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetInt32le() // pcId = r.ReadInt32();
+	b.GetInt32le() // stage = (EInserterStage)r.ReadInt32();
+	b.GetInt32le() // speed = r.ReadInt32();
+	b.GetInt32le() // time = r.ReadInt32();
+	b.GetInt32le() // stt = r.ReadInt32();
+	b.GetInt32le() // delay = r.ReadInt32();
+	b.GetInt32le() // pickTarget = r.ReadInt32();
+	b.GetInt32le() // insertTarget = r.ReadInt32();
+	b.GetBoolean() // careNeeds = r.ReadBoolean();
+	b.GetBoolean() // canStack = r.ReadBoolean();
+	b.GetInt16le() // pickOffset = r.ReadInt16();
+	b.GetInt16le() // insertOffset = r.ReadInt16();
+	b.GetInt32le() // filter = r.ReadInt32();
+	b.GetInt32le() // itemId = r.ReadInt32();
+	b.GetInt32le() // stackCount = r.ReadInt32();
+	b.GetInt32le() // stackSize = r.ReadInt32();
+	b.GetFloat32() // pos2.x = r.ReadSingle();
+	b.GetFloat32() // pos2.y = r.ReadSingle();
+	b.GetFloat32() // pos2.z = r.ReadSingle();
+	b.GetFloat32() // rot2.x = r.ReadSingle();
+	b.GetFloat32() // rot2.y = r.ReadSingle();
+	b.GetFloat32() // rot2.z = r.ReadSingle();
+	b.GetFloat32() // rot2.w = r.ReadSingle();
+	b.GetInt16le() // t1 = r.ReadInt16();
+	b.GetInt16le() // t2 = r.ReadInt16();
+}
+
+func parseAssemblerComponent(b *Buffer) {
+	checkVers(b, 0, "AssemblerComponent")
+
+	b.GetInt32le()             // id = r.ReadInt32();
+	b.GetInt32le()             // entityId = r.ReadInt32();
+	b.GetInt32le()             // pcId = r.ReadInt32();
+	b.GetBoolean()             // replicating = r.ReadBoolean();
+	b.GetBoolean()             // outputing = r.ReadBoolean();
+	b.GetInt32le()             // speed
+	b.GetInt32le()             // time = r.ReadInt32();
+	recipeID := b.GetInt32le() // recipeId = r.ReadInt32();
+	if recipeID > 0 {
+		b.GetInt32le() // (ERecipeType)r.ReadInt32()
+		b.GetInt32le() // timeSpent
+		requireCount := b.GetInt32le()
+		for i := int32(0); i < requireCount; i++ {
+			b.GetInt32le() // require ID?
+		}
+		requiresCountsCount := b.GetInt32le()
+		for i := int32(0); i < requiresCountsCount; i++ {
+			b.GetInt32le() // requireCount
+		}
+		servedCount := b.GetInt32le()
+		for i := int32(0); i < servedCount; i++ {
+			b.GetInt32le() // served ID?
+		}
+		needsCount := b.GetInt32le()
+		for i := int32(0); i < needsCount; i++ {
+			b.GetInt32le() // needs ID?
+		}
+		productsCount := b.GetInt32le()
+		for i := int32(0); i < productsCount; i++ {
+			b.GetInt32le() // products ID?
+		}
+		productCountCount := b.GetInt32le()
+		for i := int32(0); i < productCountCount; i++ {
+			b.GetInt32le() // product count
+		}
+		producedCount := b.GetInt32le()
+		for i := int32(0); i < producedCount; i++ {
+			b.GetInt32le() // produced ID?
+		}
+	}
+}
+
+func parseFractionateComponent(b *Buffer) {
+	checkVers(b, 0, "FractionateComponent")
+
+	b.GetInt32le()  // id = r.ReadInt32();
+	b.GetInt32le()  // entityId = r.ReadInt32();
+	b.GetInt32le()  // pcId = r.ReadInt32();
+	b.GetInt32le()  // belt0 = r.ReadInt32();
+	b.GetInt32le()  // belt1 = r.ReadInt32();
+	b.GetInt32le()  // belt2 = r.ReadInt32();
+	b.GetBoolean()  // isOutput0 = r.ReadBoolean();
+	b.GetBoolean()  // isOutput1 = r.ReadBoolean();
+	b.GetBoolean()  // isOutput2 = r.ReadBoolean();
+	b.GetBoolean()  // isWorking = r.ReadBoolean();
+	b.GetFloat32()  // produceProb = r.ReadSingle();
+	b.GetInt32le()  // need = r.ReadInt32();
+	b.GetInt32le()  // product = r.ReadInt32();
+	b.GetInt32le()  // needCurrCount = r.ReadInt32();
+	b.GetInt32le()  // productCurrCount = r.ReadInt32();
+	b.GetInt32le()  // oriProductCurrCount = r.ReadInt32();
+	b.GetInt32le()  // progress = r.ReadInt32();
+	b.GetBoolean()  // isRand = r.ReadBoolean();
+	b.GetBoolean()  // fractionateSuccess = r.ReadBoolean();
+	b.GetInt32le()  // needMaxCount = r.ReadInt32();
+	b.GetInt32le()  // productMaxCount = r.ReadInt32();
+	b.GetInt32le()  // oriProductMaxCount = r.ReadInt32();
+	b.GetUInt32le() // seed = r.ReadUInt32();
+}
+
+func parseEjectorComponent(b *Buffer) {
+	checkVers(b, 0, "EjectorComponent")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetInt32le() // planetId = r.ReadInt32();
+	b.GetInt32le() // pcId = r.ReadInt32();
+	b.GetInt32le() // direction = r.ReadInt32();
+	b.GetInt32le() // time = r.ReadInt32();
+	b.GetBoolean() // fired = r.ReadBoolean();
+	b.GetInt32le() // chargeSpend = r.ReadInt32();
+	b.GetInt32le() // coldSpend = r.ReadInt32();
+	b.GetInt32le() // bulletId = r.ReadInt32();
+	b.GetInt32le() // bulletCount = r.ReadInt32();
+	b.GetInt32le() // orbitId = r.ReadInt32();
+	b.GetFloat32() // pivotY = r.ReadSingle();
+	b.GetFloat32() // muzzleY = r.ReadSingle();
+	b.GetFloat32() // localPosN.x = r.ReadSingle();
+	b.GetFloat32() // localPosN.y = r.ReadSingle();
+	b.GetFloat32() // localPosN.z = r.ReadSingle();
+	b.GetFloat32() // localAlt = r.ReadSingle();
+	b.GetFloat32() // localRot.x = r.ReadSingle();
+	b.GetFloat32() // localRot.y = r.ReadSingle();
+	b.GetFloat32() // localRot.z = r.ReadSingle();
+	b.GetFloat32() // localRot.w = r.ReadSingle();
+	b.GetFloat32() // localDir.x = r.ReadSingle();
+	b.GetFloat32() // localDir.y = r.ReadSingle();
+	b.GetFloat32() // localDir.z = r.ReadSingle();
+}
+
+func parseSiloComponent(b *Buffer) {
+	checkVers(b, 0, "SiloComponent")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetInt32le() // planetId = r.ReadInt32();
+	b.GetInt32le() // pcId = r.ReadInt32();
+	b.GetInt32le() // direction = r.ReadInt32();
+	b.GetInt32le() // time = r.ReadInt32();
+	b.GetBoolean() // fired = r.ReadBoolean();
+	b.GetInt32le() // chargeSpend = r.ReadInt32();
+	b.GetInt32le() // coldSpend = r.ReadInt32();
+	b.GetInt32le() // bulletId = r.ReadInt32();
+	b.GetInt32le() // bulletCount = r.ReadInt32();
+	b.GetInt32le() // autoIndex = r.ReadInt32();
+	b.GetBoolean() // hasNode = r.ReadBoolean();
+	b.GetFloat32() // localPosN.x = r.ReadSingle();
+	b.GetFloat32() // localPosN.y = r.ReadSingle();
+	b.GetFloat32() // localPosN.z = r.ReadSingle();
+	b.GetFloat32() // localRot.x = r.ReadSingle();
+	b.GetFloat32() // localRot.y = r.ReadSingle();
+	b.GetFloat32() // localRot.z = r.ReadSingle();
+	b.GetFloat32() // localRot.w = r.ReadSingle();
+}
+
+func parseLabComponent(b *Buffer) {
+	checkVers(b, 0, "LabComponent")
+
+	b.GetInt32le()                 // id = r.ReadInt32();
+	b.GetInt32le()                 // entityId = r.ReadInt32();
+	b.GetInt32le()                 // pcId = r.ReadInt32();
+	b.GetInt32le()                 // nextLabId = r.ReadInt32();
+	b.GetBoolean()                 // replicating = r.ReadBoolean();
+	b.GetBoolean()                 // outputing = r.ReadBoolean();
+	b.GetInt32le()                 // time = r.ReadInt32();
+	b.GetInt32le()                 // hashBytes = r.ReadInt32();
+	researchMode := b.GetBoolean() // researchMode = r.ReadBoolean();
+	recipeID := b.GetInt32le()     // recipeId = r.ReadInt32();
+	b.GetInt32le()                 // techId = r.ReadInt32();
+	if !researchMode && recipeID > 0 {
+		b.GetInt32le() // timeSpent
+		requireCount := b.GetInt32le()
+		for i := int32(0); i < requireCount; i++ {
+			b.GetInt32le() // require ID?
+		}
+		requiresCountsCount := b.GetInt32le()
+		for i := int32(0); i < requiresCountsCount; i++ {
+			b.GetInt32le() // requireCount
+		}
+		servedCount := b.GetInt32le()
+		for i := int32(0); i < servedCount; i++ {
+			b.GetInt32le() // served ID?
+		}
+		needsCount := b.GetInt32le()
+		for i := int32(0); i < needsCount; i++ {
+			b.GetInt32le() // needs ID?
+		}
+		productsCount := b.GetInt32le()
+		for i := int32(0); i < productsCount; i++ {
+			b.GetInt32le() // products ID?
+		}
+		productCountCount := b.GetInt32le()
+		for i := int32(0); i < productCountCount; i++ {
+			b.GetInt32le() // product count
+		}
+		producedCount := b.GetInt32le()
+		for i := int32(0); i < producedCount; i++ {
+			b.GetInt32le() // produced ID?
+		}
+	}
+	if researchMode {
+		matrixPoints := b.GetInt32le()
+		for i := int32(0); i < matrixPoints; i++ {
+			b.GetInt32le() // ?
+		}
+		matrixServed := b.GetInt32le()
+		for i := int32(0); i < matrixServed; i++ {
+			b.GetInt32le() // ?
+		}
+		needsCount := b.GetInt32le()
+		for i := int32(0); i < needsCount; i++ {
+			b.GetInt32le() // needs ID?
+		}
+	}
 }
 
 func parsePlanetTransport(b *Buffer) {
+	checkVers(b, 0, "PlanetTransport")
 
+	stationCursor := b.GetInt32le()
+	stationCapackty := b.GetInt32le()
+	stationRecycleCounter := b.GetInt32le()
+	fmt.Printf("station: capacity %d, cursor %d, recycleCursor %d\n",
+		stationCapackty, stationCursor, stationRecycleCounter)
+	for i := int32(1); i < stationCursor; i++ {
+		id := b.GetInt32le()
+		if id != 0 {
+			if id != i {
+				panic(fmt.Sprintf("id != i (%d, %d)", id, i))
+			}
+			parseStationComponent(b)
+		}
+	}
+	for i := 0; int32(i) < stationRecycleCounter; i++ {
+		b.GetInt32le() // recycle id?
+	}
+}
+
+func parseStationComponent(b *Buffer) {
+	checkVers(b, 2, "StationComponent")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // gid = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetInt32le() // planetId = r.ReadInt32();
+	b.GetInt32le() // pcId = r.ReadInt32();
+	b.GetInt32le() // gene = r.ReadInt32();
+	b.GetFloat32() // droneDock.x = r.ReadSingle();
+	b.GetFloat32() // droneDock.y = r.ReadSingle();
+	b.GetFloat32() // droneDock.z = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.x = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.y = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.z = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.x = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.y = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.z = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.w = r.ReadSingle();
+	b.GetBoolean() // isStellar = r.ReadBoolean();
+	hasName := b.GetInt32le()
+	if hasName > 0 {
+		b.GetString() // name = r.ReadString();
+	}
+	b.GetInt64le() // energy = r.ReadInt64();
+	b.GetInt64le() // energyPerTick = r.ReadInt64();
+	b.GetInt64le() // energyMax = r.ReadInt64();
+	b.GetInt32le() // warperCount = r.ReadInt32();
+	b.GetInt32le() // warperMaxCount = r.ReadInt32();
+	b.GetInt32le() // idleDroneCount = r.ReadInt32();
+	workDroneCount := b.GetInt32le()
+	b.GetInt32le() // workDroneDatas.Length
+	for i := int32(0); i < workDroneCount; i++ {
+		parseDroneData(b)
+	}
+	for i := int32(0); i < workDroneCount; i++ {
+		parseLocalLogisticOrder(b)
+	}
+	b.GetInt32le()                  // idleShipCount = r.ReadInt32();
+	workShipCount := b.GetInt32le() // workShipCount = r.ReadInt32();
+	b.GetInt64le()                  // idleShipIndices = r.ReadUInt64();
+	b.GetInt64le()                  // workShipIndices = r.ReadUInt64();
+	b.GetInt32le()                  // workShipDatas.Length
+	for i := int32(0); i < workShipCount; i++ {
+		parseShipData(b)
+	}
+	for i := int32(0); i < workShipCount; i++ {
+		parseRemoteLogisticOrder(b)
+	}
+	stationStoreCount := b.GetInt32le()
+	for i := int32(0); i < stationStoreCount; i++ {
+		parseStationStore(b)
+	}
+	slotCount := b.GetInt32le()
+	for i := int32(0); i < slotCount; i++ {
+		b.GetInt32le() // slots[n].dir = (IODir)r.ReadInt32();
+		b.GetInt32le() // slots[n].beltId = r.ReadInt32();
+		b.GetInt32le() // slots[n].storageIdx = r.ReadInt32();
+		b.GetInt32le() // slots[n].counter = r.ReadInt32();
+	}
+	b.GetInt32le() // localPairProcess = r.ReadInt32();
+	b.GetInt32le() // remotePairProcess = r.ReadInt32();
+	b.GetInt32le() // nextShipIndex = r.ReadInt32();
+	b.GetInt32le() // isCollector = r.ReadBoolean();
+	collectionIDsLength := b.GetInt32le()
+	for i := int32(0); i < collectionIDsLength; i++ {
+		b.GetInt32le() // collectionIds[num7] = r.ReadInt32();
+	}
+	collectionPerTickLength := b.GetInt32le()
+	for i := int32(0); i < collectionPerTickLength; i++ {
+		b.GetFloat32() // collectionPerTick[num8] = r.ReadSingle();
+	}
+	currentCollectionsLength := b.GetInt32le()
+	for i := int32(0); i < currentCollectionsLength; i++ {
+		b.GetFloat32() // currentCollections[num9] = r.ReadSingle();
+	}
+	b.GetInt32le() // collectSpeed = r.ReadInt32();
+	b.GetFloat64() // tripRangeDrones = r.ReadDouble();
+	b.GetFloat64() // tripRangeShips = r.ReadDouble();
+	b.GetBoolean() // includeOrbitCollector = r.ReadBoolean();
+	b.GetFloat64() // warpEnableDist = r.ReadDouble();
+	b.GetBoolean() // warperNecessary = r.ReadBoolean();
+	b.GetInt32le() // deliveryDrones = r.ReadInt32();
+	b.GetInt32le() // deliveryShips = r.ReadInt32();
+}
+
+func parseDroneData(b *Buffer) {
+	checkVers(b, 0, "DroneData")
+
+	b.GetInt32le() // begin.x = r.ReadSingle()
+	b.GetInt32le() // begin.y = r.ReadSingle()
+	b.GetInt32le() // begin.z = r.ReadSingle()
+	b.GetInt32le() // end.x = r.ReadSingle()
+	b.GetInt32le() // end.y = r.ReadSingle()
+	b.GetInt32le() // end.z = r.ReadSingle()
+	b.GetInt32le() // endId = r.ReadInt32()
+	b.GetInt32le() // direction = r.ReadSingle()
+	b.GetInt32le() // maxt = r.ReadSingle()
+	b.GetInt32le() // t = r.ReadSingle()
+	b.GetInt32le() // itemId = r.ReadInt32()
+	b.GetInt32le() // itemCount = r.ReadInt32()
+	b.GetInt32le() // gene = r.ReadInt32()
+}
+
+func parseLocalLogisticOrder(b *Buffer) {
+	checkVers(b, 0, "LocalLogisticsOrder")
+
+	b.GetInt32le() // otherStationId = r.ReadInt32()
+	b.GetInt32le() // thisIndex = r.ReadInt32()
+	b.GetInt32le() // otherIndex = r.ReadInt32()
+	b.GetInt32le() // itemId = r.ReadInt32()
+	b.GetInt32le() // thisOrdered = r.ReadInt32()
+	b.GetInt32le() // otherOrdered = r.ReadInt32()
+}
+
+func parseShipData(b *Buffer) {
+	checkVers(b, 0, "ShipData")
+
+	b.GetInt32le() // stage = r.ReadInt32()
+	b.GetInt32le() // planetA = r.ReadInt32()
+	b.GetInt32le() // planetB = r.ReadInt32()
+	b.GetFloat64() // uPos.x = r.ReadDouble()
+	b.GetFloat64() // uPos.y = r.ReadDouble()
+	b.GetFloat64() // uPos.z = r.ReadDouble()
+	b.GetFloat32() // uVel.x = r.ReadSingle()
+	b.GetFloat32() // uVel.y = r.ReadSingle()
+	b.GetFloat32() // uVel.z = r.ReadSingle()
+	b.GetFloat32() // uSpeed = r.ReadSingle()
+	b.GetFloat32() // warpState = r.ReadSingle()
+	b.GetFloat32() // uRot.x = r.ReadSingle()
+	b.GetFloat32() // uRot.y = r.ReadSingle()
+	b.GetFloat32() // uRot.z = r.ReadSingle()
+	b.GetFloat32() // uRot.w = r.ReadSingle()
+	b.GetFloat32() // uAngularVel.x = r.ReadSingle()
+	b.GetFloat32() // uAngularVel.y = r.ReadSingle()
+	b.GetFloat32() // uAngularVel.z = r.ReadSingle()
+	b.GetFloat32() // uAngularSpeed = r.ReadSingle()
+	b.GetFloat64() // pPosTemp.x = r.ReadDouble()
+	b.GetFloat64() // pPosTemp.y = r.ReadDouble()
+	b.GetFloat64() // pPosTemp.z = r.ReadDouble()
+	b.GetFloat32() // pRotTemp.x = r.ReadSingle()
+	b.GetFloat32() // pRotTemp.y = r.ReadSingle()
+	b.GetFloat32() // pRotTemp.z = r.ReadSingle()
+	b.GetFloat32() // pRotTemp.w = r.ReadSingle()
+	b.GetInt32le() // otherGId = r.ReadInt32()
+	b.GetInt32le() // direction = r.ReadInt32()
+	b.GetFloat32() // t = r.ReadSingle()
+	b.GetInt32le() // itemId = r.ReadInt32()
+	b.GetInt32le() // itemCount = r.ReadInt32()
+	b.GetInt32le() // gene = r.ReadInt32()
+	b.GetInt32le() // shipIndex = r.ReadInt32()
+	b.GetInt32le() // warperCnt = r.ReadInt32()
+}
+
+func parseRemoteLogisticOrder(b *Buffer) {
+	checkVers(b, 0, "RemoteLogisticOrder")
+
+	b.GetInt32le() // otherStationGId = r.ReadInt32()
+	b.GetInt32le() // thisIndex = r.ReadInt32()
+	b.GetInt32le() // otherIndex = r.ReadInt32()
+	b.GetInt32le() // itemId = r.ReadInt32()
+	b.GetInt32le() // thisOrdered = r.ReadInt32()
+	b.GetInt32le() // otherOrdered = r.ReadInt32()
+}
+
+func parseStationStore(b *Buffer) {
+	checkVers(b, 0, "StationStore")
+
+	b.GetInt32le() // itemId = r.ReadInt32();
+	b.GetInt32le() // count = r.ReadInt32();
+	b.GetInt32le() // localOrder = r.ReadInt32();
+	b.GetInt32le() // remoteOrder = r.ReadInt32();
+	b.GetInt32le() // max = r.ReadInt32();
+	b.GetInt32le() // localLogic = (ELogisticStorage)r.ReadInt32();
+	b.GetInt32le() // remoteLogic = (ELogisticStorage)r.ReadInt32();
 }
 
 func parseMonsterSystem(b *Buffer) {
+	checkVers(b, 0, "MonsterSystem")
 
+	b.GetInt32le() // monsterCapacity
+	monsterCursor := b.GetInt32le()
+	monsterRecycleCursor := b.GetInt32le()
+	for i := int32(1); i < monsterCursor; i++ {
+		parseMonsterComponent(b)
+	}
+	for i := int32(0); i < monsterRecycleCursor; i++ {
+		b.GetInt32le() // recycle id?
+	}
+}
+
+func parseMonsterComponent(b *Buffer) {
+	checkVers(b, 0, "MonsterComponent")
+
+	b.GetInt32le() // id = r.ReadInt32();
+	b.GetInt32le() // entityId = r.ReadInt32();
+	b.GetFloat32() // walkSpeed = r.ReadSingle();
+	b.GetFloat32() // point0.x = r.ReadSingle();
+	b.GetFloat32() // point0.y = r.ReadSingle();
+	b.GetFloat32() // point0.z = r.ReadSingle();
+	b.GetFloat32() // point1.x = r.ReadSingle();
+	b.GetFloat32() // point1.y = r.ReadSingle();
+	b.GetFloat32() // point1.z = r.ReadSingle();
+	b.GetFloat32() // point2.x = r.ReadSingle();
+	b.GetFloat32() // point2.y = r.ReadSingle();
+	b.GetFloat32() // point2.z = r.ReadSingle();
+	b.GetInt32le() // direction = r.ReadInt32();
+	b.GetFloat32() // stopTime = r.ReadSingle();
+	b.GetFloat32() // t = r.ReadSingle();
+	b.GetFloat32() // stopCurrentTime = r.ReadSingle();
+	b.GetInt32le() // monsterState = (EMonsterState)r.ReadInt32();
+	b.GetFloat32() // stepDistance = r.ReadSingle();
 }
 
 func parsePlatformSystem(b *Buffer) {
+	checkVers(b, 0, "PlatformSystem")
 
+	reformDataLength := b.GetInt32le()
+	b.GetBytes(int(reformDataLength)) // reformData
+	reformOffsetsCount := b.GetInt32le()
+	for i := int32(0); i < reformOffsetsCount; i++ {
+		b.GetInt32le() // reformOffset
+	}
 }

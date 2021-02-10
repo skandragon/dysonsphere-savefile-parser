@@ -95,7 +95,7 @@ func (b *Buffer) GetUInt64le() uint64 {
 // GetInt32le returns an int32, encoded as little-endian.
 // Will panic() if insufficient data remains.
 func (b *Buffer) GetInt32le() int32 {
-	b.checklen(8)
+	b.checklen(4)
 	var ret int32 = 0
 	ret |= int32(b.data[b.pos])
 	b.pos++
@@ -111,7 +111,7 @@ func (b *Buffer) GetInt32le() int32 {
 // GetUInt32le returns an uint32, encoded as little-endian.
 // Will panic() if insufficient data remains.
 func (b *Buffer) GetUInt32le() uint32 {
-	b.checklen(8)
+	b.checklen(4)
 	var ret uint32 = 0
 	ret |= uint32(b.data[b.pos])
 	b.pos++
@@ -120,6 +120,30 @@ func (b *Buffer) GetUInt32le() uint32 {
 	ret |= uint32(b.data[b.pos]) << 16
 	b.pos++
 	ret |= uint32(b.data[b.pos]) << 24
+	b.pos++
+	return ret
+}
+
+// GetInt16le returns an int16, encoded as little-endian.
+// Will panic() if insufficient data remains.
+func (b *Buffer) GetInt16le() int16 {
+	b.checklen(2)
+	var ret int16 = 0
+	ret |= int16(b.data[b.pos])
+	b.pos++
+	ret |= int16(b.data[b.pos]) << 8
+	b.pos++
+	return ret
+}
+
+// GetUInt16le returns an uint16, encoded as little-endian.
+// Will panic() if insufficient data remains.
+func (b *Buffer) GetUInt16le() uint16 {
+	b.checklen(2)
+	var ret uint16 = 0
+	ret |= uint16(b.data[b.pos])
+	b.pos++
+	ret |= uint16(b.data[b.pos]) << 8
 	b.pos++
 	return ret
 }

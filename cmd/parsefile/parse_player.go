@@ -114,11 +114,11 @@ func parseStorageComponent(b *Buffer) {
 	next := b.GetInt32le()
 	bottom := b.GetInt32le()
 	top := b.GetInt32le()
-	fmt.Printf("id %d, entityId %d, previous %d, next %d, top %d, bottom %d\n",
+	fmt.Printf("storage id %d, entityId %d, previous %d, next %d, top %d, bottom %d\n",
 		id, entityID, previous, next, bottom, top)
 	storageType := b.GetInt32le() // type = (EStorageType)r.ReadInt32();
 	size := b.GetInt32le()
-	fmt.Printf("  storage type %d, size %d\n", storageType, size)
+	fmt.Printf("  storage type %d (%s), size %d\n", storageType, StorageType(storageType), size)
 	b.GetInt32le() // bans = r.ReadInt32();
 	for i := 0; int32(i) < size; i++ {
 		b.GetInt32le() // grids[i].itemId = r.ReadInt32();

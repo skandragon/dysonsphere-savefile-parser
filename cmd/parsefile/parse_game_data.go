@@ -1,18 +1,23 @@
 package main
 
-import (
-	"fmt"
-)
+type GameData struct {
+	Name            string           `json:"name"`
+	Descriptor      *GameDesc        `json:"descriptor"`
+	StarCount       int32            `json:"star_count"`
+	PlanetFactories []*PlanetFactory `json:"planet_factories"`
+	GameTicks       int64            `json:"game_ticks"`
+}
 
-func parseGameData(b *Buffer) {
-	checkVers(b, 2, "GameData")
+func parseGameData(b *Buffer) *GameData {
+	const VERSION = 2
+	checkVers(b, VERSION, "GameData")
 
-	gamename := b.GetString()
-	fmt.Printf("Save file name: %s\n", gamename)
+	ret := &GameData{
+		Name:       b.GetString(),
+		Descriptor: parseGameDesc(b),
+	}
 
-	parseGameDesc(b)
-	gameTicks := b.GetInt64le()
-	fmt.Printf("Game ticks: %d\n", gameTicks)
+	ret.GameTicks = b.GetInt64le()
 
 	parseGamePreferences(b)
 	parseGameHistory(b)
@@ -30,12 +35,14 @@ func parseGameData(b *Buffer) {
 
 	parseGalacticTransport(b) // yes, this is out of order in the code too...
 
+	ret.PlanetFactories = make([]*PlanetFactory, int(factoryCount))
 	for i := 0; int32(i) < factoryCount; i++ {
-		parsePlanetFactory(b, i)
+		ret.PlanetFactories[i] = parsePlanetFactory(b, i)
 	}
 
-	starcount := b.GetInt32le()
-	fmt.Printf("Star count (again?) %d\n", starcount)
+	ret.StarCount = b.GetInt32le()
 
 	// dyson sphere mess...
+
+	return ret
 }

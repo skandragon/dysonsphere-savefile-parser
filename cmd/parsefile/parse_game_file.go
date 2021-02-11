@@ -2,12 +2,20 @@ package main
 
 import "io/ioutil"
 
-func parseGameFile(filename string) {
+type GameFile struct {
+	Header *GameHeader
+	Data   *GameData
+}
+
+func parseGameFile(filename string) *GameFile {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	b := MakeBuffer(data)
-	parseHeader(b)
-	parseGameData(b)
+
+	return &GameFile{
+		Header: parseHeader(b),
+		Data:   parseGameData(b),
+	}
 }

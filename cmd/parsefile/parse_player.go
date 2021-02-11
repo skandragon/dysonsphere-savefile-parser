@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func parsePlayer(b *Buffer) {
 	checkVers(b, 1, "Player")
 
@@ -108,17 +106,14 @@ func parseMechaDrone(b *Buffer) {
 func parseStorageComponent(b *Buffer) {
 	checkVers(b, 1, "StorageComponent")
 
-	id := b.GetInt32le()
-	entityID := b.GetInt32le()
-	previous := b.GetInt32le()
-	next := b.GetInt32le()
-	bottom := b.GetInt32le()
-	top := b.GetInt32le()
-	fmt.Printf("storage id %d, entityId %d, previous %d, next %d, top %d, bottom %d\n",
-		id, entityID, previous, next, bottom, top)
-	storageType := b.GetInt32le() // type = (EStorageType)r.ReadInt32();
+	b.GetInt32le() // id
+	b.GetInt32le() // entityID
+	b.GetInt32le() // previous
+	b.GetInt32le() // next
+	b.GetInt32le() // bottom
+	b.GetInt32le() // top
+	b.GetInt32le() // type = (EStorageType)r.ReadInt32();
 	size := b.GetInt32le()
-	fmt.Printf("  storage type %d (%s), size %d\n", storageType, StorageType(storageType), size)
 	b.GetInt32le() // bans = r.ReadInt32();
 	for i := 0; int32(i) < size; i++ {
 		b.GetInt32le() // grids[i].itemId = r.ReadInt32();

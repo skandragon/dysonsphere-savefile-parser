@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -12,7 +13,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	parseGameFile(args[1])
+	data := parseGameFile(args[1])
+	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(jsonBytes))
 }
 
 func checkVers(b *Buffer, expected int32, name string) {

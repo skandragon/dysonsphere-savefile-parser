@@ -1,28 +1,15 @@
 package main
 
-import "fmt"
-
-type gameDesc struct {
-	galaxyAlgo         int32
-	galaxySeed         int32
-	starCount          int32
-	playerPronto       int32
-	resourceMultiplier float32
-	themeIds           []int32
+type GameDesc struct {
+	GalaxyAlgo         int32   `json:"galaxy_algo"`
+	GalaxySeed         int32   `json:"galaxy_seed"`
+	StarCount          int32   `json:"star_count"`
+	PlayerPronto       int32   `json:"player_pronto"`
+	ResourceMultiplier float32 `json:"resource_multiplier"`
+	ThemeIDs           []int32 `json:"theme_ids"`
 }
 
-func (g *gameDesc) Dump() {
-	fmt.Printf("galaxy algorithm: %d\n", g.galaxyAlgo)
-	fmt.Printf("galaxy seed: %d\n", g.galaxySeed)
-	fmt.Printf("star count: %d\n", g.starCount)
-	fmt.Printf("playerPronto: %d\n", g.playerPronto)
-	fmt.Printf("resource multiplier: %f\n", g.resourceMultiplier)
-	for _, tid := range g.themeIds {
-		fmt.Printf("  theme ID: %d\n", tid)
-	}
-}
-
-func parseGameDesc(b *Buffer) {
+func parseGameDesc(b *Buffer) *GameDesc {
 	checkVers(b, 2, "GameDesc")
 
 	galaxyAlgo := b.GetInt32le()
@@ -37,13 +24,13 @@ func parseGameDesc(b *Buffer) {
 		tids[i] = b.GetInt32le()
 	}
 
-	gameDesc := &gameDesc{
-		galaxyAlgo:         galaxyAlgo,
-		galaxySeed:         galaxySeed,
-		starCount:          starCount,
-		playerPronto:       playerPronto,
-		resourceMultiplier: resourceMultiplier,
-		themeIds:           tids,
+	gameDesc := &GameDesc{
+		GalaxyAlgo:         galaxyAlgo,
+		GalaxySeed:         galaxySeed,
+		StarCount:          starCount,
+		PlayerPronto:       playerPronto,
+		ResourceMultiplier: resourceMultiplier,
+		ThemeIDs:           tids,
 	}
-	gameDesc.Dump()
+	return gameDesc
 }

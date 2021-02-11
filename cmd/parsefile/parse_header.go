@@ -5,7 +5,13 @@ import (
 	"fmt"
 )
 
-func parseHeader(b *Buffer) {
+type GameHeader struct {
+	GameVersion string `json:"game_version"`
+	GameTicks   int64  `json:"game_ticks"`
+	Timestamp   int64  `json:"timestamp"`
+}
+
+func parseHeader(b *Buffer) *GameHeader {
 	var signature = []byte{'V', 'F', 'S', 'A', 'V', 'E'}
 
 	filesig := b.GetBytes(6)
@@ -20,27 +26,25 @@ func parseHeader(b *Buffer) {
 	}
 
 	// check save file version
-	filevers := b.GetInt32le()
-	if filevers != 4 {
-		panic(fmt.Sprintf("Found file version %d, cannot process further", filevers))
-	}
+	const VERSION = 4
+	checkVers(b, VERSION, "GameHeader")
 
 	versMajor := b.GetInt32le()
 	versMinor := b.GetInt32le()
 	versRelease := b.GetInt32le()
-	fmt.Printf("Save file from game version %d.%d.%d\n", versMajor, versMinor, versRelease)
-
 	ticks := b.GetInt64le()
-	fmt.Printf("Game duration in ticks: %d\n", ticks)
-
 	datetime := b.GetInt64le()
-	fmt.Printf("Date and time of save (as int64): %d\n", datetime)
 
 	imglen := b.GetInt32le()
-	var image []byte
 	if imglen > 0 {
-		image = b.GetBytes(int(imglen))
-		fmt.Printf("Image length: %d\n", len(image))
+		b.GetBytes(int(imglen))
+		//fmt.Printf("Image length: %d\n", len(image))
 		// Would perhaps want to display this...
+	}
+
+	return &GameHeader{
+		GameVersion: fmt.Sprintf("%d.%d.%d", versMajor, versMinor, versRelease),
+		GameTicks:   ticks,
+		Timestamp:   datetime,
 	}
 }

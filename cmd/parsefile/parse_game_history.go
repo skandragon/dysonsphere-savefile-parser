@@ -1,52 +1,35 @@
 package main
 
-import "fmt"
-
 func parseGameHistory(b *Buffer) {
 	checkVers(b, 2, "GameHistory")
 
 	// TODO: parse recipeUnlocked
 	count := b.GetInt32le()
-	fmt.Printf("Unlocked recipe count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		id := b.GetInt32le()
-		if id != 0 {
-			fmt.Printf("   id: %d\n", id)
-		}
+		b.GetInt32le() // recipeID
 	}
 
 	// TODO: parse tutorialUnlocked
 	count = b.GetInt32le()
-	fmt.Printf("Tutorial unlocked count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		id := b.GetInt32le()
-		if id != 0 {
-			fmt.Printf("   id: %d\n", id)
-		}
+		b.GetInt32le() // id
 	}
 
 	// TODO: parse featureKeys
 	count = b.GetInt32le()
-	fmt.Printf("Feature keys count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		id := b.GetInt32le()
-		if id != 0 {
-			fmt.Printf("   id: %d\n", id)
-		}
+		b.GetInt32le() // id
 	}
 
 	// TODO: parse techStates
 	count = b.GetInt32le()
-	fmt.Printf("Tech states count: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		id := b.GetInt32le()
-		unlocked := b.GetBoolean()
-		curLevel := b.GetInt32le()
-		maxLevel := b.GetInt32le()
-		hashUnloaded := b.GetInt64le()
-		hashNeeded := b.GetInt64le()
-		fmt.Printf("  id %d: unlocked=%v curLevel %d, maxLevel %d, hashUploaded %d, hashNeeded %d\n",
-			id, unlocked, curLevel, maxLevel, hashUnloaded, hashNeeded)
+		b.GetInt32le() // id
+		b.GetBoolean() // unlocked
+		b.GetInt32le() // curLevel
+		b.GetInt32le() // maxLevel
+		b.GetInt64le() // hashUnloaded
+		b.GetInt64le() // hashNeeded
 	}
 
 	b.GetBoolean() // automanageLabItems
@@ -54,12 +37,8 @@ func parseGameHistory(b *Buffer) {
 
 	// techQueue
 	count = b.GetInt32le()
-	fmt.Printf("Tech queue length: %d\n", count)
 	for i := 0; int32(i) < count; i++ {
-		id := b.GetInt32le()
-		if id != 0 {
-			fmt.Printf("   id: %d\n", id)
-		}
+		b.GetInt32le() // ID
 	}
 
 	b.GetInt32le() // universeObserveLevel

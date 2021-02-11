@@ -3,7 +3,7 @@ package cs
 import "math"
 
 //
-// Random implements the really lame, but apparently frequently used c# Random class.
+// PRNGSequence implements the really lame, but apparently frequently used c# Random class.
 //
 type PRNGSequence struct {
 	inext     int32
@@ -96,4 +96,12 @@ func (r *PRNGSequence) internalSample() int32 {
 	r.inextp = locINextp
 
 	return retVal
+}
+
+func (r *PRNGSequence) NextDouble() float64 {
+	return (float64(r.Next()) * (1.0 / float64(math.MaxInt32)))
+}
+
+func (r *PRNGSequence) NextWithMax(max int32) int32 {
+	return int32(r.NextDouble() * float64(max))
 }

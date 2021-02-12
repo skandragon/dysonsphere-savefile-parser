@@ -99,9 +99,33 @@ func (r *PRNGSequence) internalSample() int32 {
 }
 
 func (r *PRNGSequence) NextDouble() float64 {
-	return (float64(r.Next()) * (1.0 / float64(math.MaxInt32)))
+	return r.sample()
+}
+
+func (r *PRNGSequence) sample() float64 {
+	return float64(r.internalSample()) * (1.0 / float64(math.MaxInt32))
 }
 
 func (r *PRNGSequence) NextWithMax(max int32) int32 {
 	return int32(r.NextDouble() * float64(max))
+}
+
+func (r *PRNGSequence) NextRange(min int32, max int32) int32 {
+	span := int64(max) - int64(min)
+	if span <= math.MaxInt32 {
+		return int32(r.sample()*float64(span)) + min
+	}
+	return int32(r.getSampleForLargeRange()*float64(span)) + min
+}
+
+func (r *PRNGSequence) getSampleForLargeRange() float64 {
+	result := r.internalSample()
+	negative := r.internalSample()%2 == 0
+	if negative {
+		result = -result
+	}
+	d := float64(result)
+	d += (math.MaxInt32 - 1)
+	d /= 2*math.MaxInt32 - 1
+	return d
 }

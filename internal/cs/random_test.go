@@ -128,6 +128,56 @@ func TestNextSmallRange1001(t *testing.T) {
 	require.NoError(t, sc.Err())
 }
 
+func TestNextSmallRange32768(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextsmallrange-32768.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(32768)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextRange(-32768, 32768)))
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextLargeRange1073741824(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextlargerange-1073741824.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(1073741824)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextRange(-1073741824, 1073741824)))
+	}
+	require.NoError(t, sc.Err())
+}
+func TestNextLargeRange1073741825(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextlargerange-1073741825.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(1073741825)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextRange(-1073741825, 1073741825)))
+	}
+	require.NoError(t, sc.Err())
+}
+
 func TestNext12345(t *testing.T) {
 	r := MakePRNGSequence(12345)
 	expected := []int32{

@@ -1,6 +1,132 @@
 package cs
 
-import "testing"
+import (
+	"bufio"
+	"os"
+	"strconv"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestNext1000(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/next-1000.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(1000)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.Next()))
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNext5432(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/next-5432.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(5432)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.Next()))
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextMax32768(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextmax-32768.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(32768)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextWithMax(32768)))
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextMax810485(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextmax-810485.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(810485)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextWithMax(810485)))
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextDouble6195(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextdouble-6195.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(6195)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.ParseFloat(line, 64)
+		require.NoError(t, err)
+		require.InEpsilon(t, expected, r.NextDouble(), 1e-14)
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextDouble19596839(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextdouble-19596839.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(19596839)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.ParseFloat(line, 64)
+		require.NoError(t, err)
+		require.InEpsilon(t, expected, r.NextDouble(), 1e-14)
+	}
+	require.NoError(t, sc.Err())
+}
+
+func TestNextSmallRange1001(t *testing.T) {
+	f, err := os.OpenFile("./testdata/random/nextsmallrange-1001.txt", os.O_RDONLY, os.ModePerm)
+	require.NoError(t, err)
+	defer f.Close()
+
+	r := MakePRNGSequence(1001)
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		expected, err := strconv.Atoi(line)
+		require.NoError(t, err)
+		require.Equal(t, expected, int(r.NextRange(-1001, 1001)))
+	}
+	require.NoError(t, sc.Err())
+}
 
 func TestNext12345(t *testing.T) {
 	r := MakePRNGSequence(12345)

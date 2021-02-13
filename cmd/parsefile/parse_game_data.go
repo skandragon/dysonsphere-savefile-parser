@@ -6,6 +6,7 @@ type GameData struct {
 	StarCount       int32            `json:"star_count"`
 	PlanetFactories []*PlanetFactory `json:"planet_factories"`
 	GameTicks       int64            `json:"game_ticks"`
+	Galaxy          *Universe        `json:"galaxy"`
 }
 
 func parseGameData(b *Buffer) *GameData {
@@ -16,8 +17,7 @@ func parseGameData(b *Buffer) *GameData {
 		Name:       b.GetString(),
 		Descriptor: parseGameDesc(b),
 	}
-
-	MakeUniverse(ret.Descriptor)
+	ret.Galaxy = MakeUniverse(ret.Descriptor)
 
 	ret.GameTicks = b.GetInt64le()
 

@@ -7,12 +7,13 @@ import (
 	"github.com/skandragon/dysonsphere/internal/cs"
 )
 
-type Universe struct{}
+type Universe struct {
+	Stars []*StarData `json:"stars"`
+}
 
 func MakeUniverse(gd *GameDesc) *Universe {
 
 	random := cs.MakePRNGSequence(gd.GalaxySeed)
-	fmt.Println(random.Next())
 	random.Next() // seed
 
 	//num := generateTempPoses(seed, gd.StarCount, 4, 2.0, 2.3, 3.5, 0.18)
@@ -22,15 +23,20 @@ func MakeUniverse(gd *GameDesc) *Universe {
 	random.NextDouble() // num4
 	random.NextDouble() // num5
 
+	stars := make([]*StarData, 0)
 	for i := int32(0); i < gd.StarCount; i++ {
 		seed2 := random.Next()
 		if i == 0 {
-			makeBirthStar(seed2)
+			stars = append(stars, makeBirthStar(seed2))
+		} else {
+			stars = append(stars, makeBirthStar(seed2))
 		}
 		//makeStar(seed2)
 	}
 
-	return &Universe{}
+	return &Universe{
+		Stars: stars,
+	}
 }
 
 func randNormal(averageValue float64, standardDeviation float64, r1 float64, r2 float64) float64 {
@@ -85,7 +91,7 @@ type StarData struct {
 	PhysicsRadius      float64
 }
 
-func makeBirthStar(seed int32) {
+func makeBirthStar(seed int32) *StarData {
 	star := &StarData{
 		Index: 0,
 		Level: 0,
@@ -95,7 +101,7 @@ func makeBirthStar(seed int32) {
 	random := cs.MakePRNGSequence(seed)
 	seed2 := random.Next()
 	seed3 := random.Next()
-	star.Name = randomName(seed2)
+	//	star.Name = randomName(seed2)
 	random2 := cs.MakePRNGSequence(seed3)
 	r := random2.NextDouble()
 	r2 := random2.NextDouble()
@@ -143,7 +149,7 @@ func makeBirthStar(seed int32) {
 	}
 	galaxy := []string{}
 	star.Name = randomStarName(seed2, star, galaxy)
-	fmt.Println(star)
+	return star
 }
 
 func setStarAge(star *StarData, age float64, rn float64, rt float64) {

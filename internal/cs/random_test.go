@@ -178,9 +178,8 @@ func TestNextLargeRange1073741825(t *testing.T) {
 	require.NoError(t, sc.Err())
 }
 
-func TestNext12345(t *testing.T) {
-	r := MakePRNGSequence(12345)
-	expected := []int32{
+var (
+	expected12345 = []int32{
 		143337951, 150666398, 1663795458, 1097663221, 1712597933, 1776631026, 356393799, 1580828476,
 		558810388, 1086637143, 494509053, 831377771, 463814839, 44691035, 289552956, 1590924033,
 		418954878, 1904902962, 1849199486, 770656856, 222698908, 1137270943, 770420532, 1519356451,
@@ -190,11 +189,22 @@ func TestNext12345(t *testing.T) {
 		377238926, 1830086762, 1383740914, 1322492187, 948158774, 1066648348, 64646849, 1153550655,
 		1527729513, 144439007, 1998586659, 379980558, 203606488, 897811492, 729885803, 32124476,
 	}
+)
 
-	for i, exp := range expected {
+func TestNext12345(t *testing.T) {
+	r := MakePRNGSequence(12345)
+
+	for _, exp := range expected12345 {
 		got := r.Next()
-		if exp != got {
-			t.Errorf("Expected %d, got %d, index %d", exp, got, i)
-		}
+		require.Equal(t, exp, got)
+	}
+}
+
+func TestNext12345NegativeSeed(t *testing.T) {
+	r1 := MakePRNGSequence(12345)
+	r2 := MakePRNGSequence(-12345)
+
+	for i := 0; i < 50000; i++ {
+		require.Equal(t, r1.Next(), r2.Next())
 	}
 }

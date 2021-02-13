@@ -98,6 +98,9 @@ func (r *PRNGSequence) internalSample() int32 {
 	return retVal
 }
 
+//
+// NextDouble returns a floating point value between 0 and 1, inclusive.
+//
 func (r *PRNGSequence) NextDouble() float64 {
 	return r.sample()
 }
@@ -106,10 +109,17 @@ func (r *PRNGSequence) sample() float64 {
 	return float64(r.internalSample()) * (1.0 / float64(math.MaxInt32))
 }
 
+//
+// NextWithMax returns a random value between 0 and the max value provided,
+// inclusive.
+//
 func (r *PRNGSequence) NextWithMax(max int32) int32 {
 	return int32(r.NextDouble() * float64(max))
 }
 
+//
+// NextRange returns a value between min and max, inclusive.
+//
 func (r *PRNGSequence) NextRange(min int32, max int32) int32 {
 	span := int64(max) - int64(min)
 	if span <= math.MaxInt32 {

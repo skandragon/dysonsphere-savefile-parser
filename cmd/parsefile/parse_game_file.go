@@ -3,8 +3,8 @@ package main
 import "io/ioutil"
 
 type GameFile struct {
-	Header *GameHeader
-	Data   *GameData
+	Header *GameHeader `json:"header"`
+	Data   *GameData   `json:"data"`
 }
 
 func parseGameFile(filename string) *GameFile {

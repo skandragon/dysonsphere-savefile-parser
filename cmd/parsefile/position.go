@@ -9,6 +9,15 @@ type PositionSingle struct {
 	Z float32 `json:"z"`
 }
 
+// ParsePositionSingle extracts a PositionSingle from a binary stream.
+func ParsePositionSingle(b *Buffer) *PositionSingle {
+	return &PositionSingle{
+		X: b.GetFloat32(),
+		Y: b.GetFloat32(),
+		Z: b.GetFloat32(),
+	}
+}
+
 func (ps *PositionSingle) String() string {
 	return fmt.Sprintf("PositionSingle{%f,%f,%f}", ps.X, ps.Y, ps.Z)
 }

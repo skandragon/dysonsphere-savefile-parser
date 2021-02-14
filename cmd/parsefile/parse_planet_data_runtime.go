@@ -37,14 +37,10 @@ func parsePlanetDataRuntime(b *Buffer) *PlanetDataRuntime {
 	veinGroups := make([]*VeinGroup, veinGroupCount)
 	for i := 0; int32(i) < veinGroupCount; i++ {
 		veinGroups[i] = &VeinGroup{
-			Type: VeinType(b.GetInt32le()),
-			Position: &PositionSingle{
-				X: b.GetFloat32(),
-				Y: b.GetFloat32(),
-				Z: b.GetFloat32(),
-			},
-			Count:  b.GetInt32le(),
-			Amount: b.GetInt64le(),
+			Type:     VeinType(b.GetInt32le()),
+			Position: ParsePositionSingle(b),
+			Count:    b.GetInt32le(),
+			Amount:   b.GetInt64le(),
 		}
 	}
 

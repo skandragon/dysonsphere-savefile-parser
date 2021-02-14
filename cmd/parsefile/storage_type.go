@@ -1,10 +1,16 @@
 package main
 
+// StorageType indicates the type of storage slot, I suppose?
 type StorageType int32
 
 const (
-	StorageTypeDefault  StorageType = 0
-	StorageTypeFuel     StorageType = 1
+	// StorageTypeDefault seems to be a 'generic' boring slot.
+	StorageTypeDefault StorageType = 0
+
+	// StorageTypeFuel seems to be something that requires a fuel item.
+	StorageTypeFuel StorageType = 1
+
+	// StorageTypeFiltered seems to be ... filtered?
 	StorageTypeFiltered StorageType = 9
 )
 

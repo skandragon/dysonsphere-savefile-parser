@@ -797,14 +797,19 @@ func randomName(seed int32) string {
 	return text
 }
 
-func randomStarName(seed int32, star *StarData, galaxy []string) string {
+type UniqueStarnameChecker interface {
+	UniqueStarname(string) bool
+}
+
+func randomStarName(seed int32, star *StarData, galaxy UniqueStarnameChecker) string {
 	random := cs.MakePRNGSequence(seed)
 
 	for i := 0; i < 256; i++ {
 		seed2 := random.Next()
 		text := randomStarNameInternal(seed2, star)
-		// TODO: check for duplicates
-		return text
+		if galaxy.UniqueStarname(text) {
+			return text
+		}
 	}
 
 	return "Xstar"

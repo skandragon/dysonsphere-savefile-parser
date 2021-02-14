@@ -11,6 +11,15 @@ type Universe struct {
 	Seed  int32       `json:"seed"`
 }
 
+func (u *Universe) UniqueStarname(name string) bool {
+	for _, star := range u.Stars {
+		if star.Name == name {
+			return false
+		}
+	}
+	return true
+}
+
 func MakeUniverse(gd *GameDesc) *Universe {
 	galaxySeed := gd.GalaxySeed
 	random := cs.MakePRNGSequence(galaxySeed)
@@ -24,19 +33,22 @@ func MakeUniverse(gd *GameDesc) *Universe {
 	random.NextDouble() // num5
 
 	stars := make([]*StarData, 0)
+
+	universe := &Universe{
+		Stars: stars,
+	}
+
 	for i := int32(0); i < gd.StarCount; i++ {
 		seed2 := random.Next()
 		if i == 0 {
-			stars = append(stars, makeBirthStar(seed2))
+			stars = append(stars, makeBirthStar(seed2, universe))
 		} else {
 			//stars = append(stars, makeBirthStar(seed2))
 		}
 		//makeStar(seed2)
 	}
 
-	return &Universe{
-		Stars: stars,
-	}
+	return universe
 }
 
 func randNormal(averageValue float64, standardDeviation float64, r1 float64, r2 float64) float64 {
@@ -91,7 +103,7 @@ type StarData struct {
 	PhysicsRadius      float64
 }
 
-func makeBirthStar(seed int32) *StarData {
+func makeBirthStar(seed int32, universe UniqueStarnameChecker) *StarData {
 	star := &StarData{
 		Index:        0,
 		Level:        0,
@@ -148,8 +160,7 @@ func makeBirthStar(seed int32) *StarData {
 	if star.DysonRadius*40000.0 < (star.PhysicsRadius * 1.5) {
 		star.DysonRadius = ((star.PhysicsRadius * 1.5) / 40000.0)
 	}
-	galaxy := []string{}
-	star.Name = randomStarName(seed2, star, galaxy)
+	star.Name = randomStarName(seed2, star, universe)
 	return star
 }
 

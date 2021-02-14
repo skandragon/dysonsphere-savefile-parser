@@ -1,12 +1,7 @@
 package main
 
 import (
-	"log"
 	"math"
-	"os"
-	"runtime"
-	"sync"
-	"sync/atomic"
 
 	"github.com/skandragon/dysonsphere/internal/cs"
 )
@@ -42,47 +37,6 @@ func MakeUniverse(gd *GameDesc) *Universe {
 	return &Universe{
 		Stars: stars,
 	}
-}
-
-// hacking, trying to find out how random seeding actually works...
-func runSearch(galaxySeed int32) {
-	var wg sync.WaitGroup
-	cpuCount := runtime.NumCPU()
-	wg.Add(cpuCount)
-	index := int32(-1)
-	for job := 0; job < cpuCount; job++ {
-		go func() {
-			jobIndex := atomic.AddInt32(&index, 1)
-			slice := int32(math.MaxInt32 / cpuCount)
-			startVal := slice * jobIndex
-			endVal := startVal + slice
-			log.Printf("core %d, start %d, end %d", jobIndex, startVal, endVal)
-			search(galaxySeed, startVal, endVal)
-			wg.Done()
-		}()
-	}
-	wg.Wait()
-	os.Exit(0)
-
-}
-
-func search(seed int32, startVal int32, endVal int32) {
-	seeds := make([]int32, 0)
-
-	tstar := &StarData{Type: StarTypeMainSeqStar}
-	for i := startVal; i < endVal; i++ {
-		rtest := cs.MakePRNGSequence(i)
-		//rtest.Next()
-		//rtest.NextDouble()
-		//rtest.NextDouble()
-		//rtest.NextDouble()
-		rtest.NextDouble()
-		tseed := rtest.Next()
-		if randomStarName(tseed, tstar, []string{}) == "Bunda" {
-			seeds = append(seeds, i)
-		}
-	}
-	log.Printf("Found: %v", seeds)
 }
 
 func randNormal(averageValue float64, standardDeviation float64, r1 float64, r2 float64) float64 {

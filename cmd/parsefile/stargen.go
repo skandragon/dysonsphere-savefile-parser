@@ -38,16 +38,25 @@ type StarData struct {
 // Make the special starting star.
 func makeBirthStar(seed int32, universe UniqueStarnameChecker) *StarData {
 	star := &StarData{
-		Index:        0,
-		Level:        0,
-		ID:           1,
-		Seed:         seed,
-		ResourceCoef: 0.6,
+		Mass:               1,
+		Lifetime:           50,
+		Temperature:        8500,
+		Luminosity:         1,
+		HabitableRadius:    1,
+		LightBalanceRadius: 1,
+		DysonRadius:        10,
+		OrbitScaler:        1,
+		Index:              0,
+		Level:              0,
+		ID:                 1,
+		Seed:               seed,
+		ResourceCoef:       0.6,
+		Position:           VectorLF3Zero(),
+		UPosition:          VectorLF3Zero(),
 	}
 	random := cs.MakePRNGSequence(seed)
 	seed2 := random.Next()
 	seed3 := random.Next()
-	//	star.Name = randomName(seed2)
 	random2 := cs.MakePRNGSequence(seed3)
 	r := random2.NextDouble()
 	r2 := random2.NextDouble()
@@ -155,10 +164,19 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 
 func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType StarType, needSpectr SpectralType) *StarData {
 	star := &StarData{
-		Index:    id - 1,
-		Seed:     seed,
-		ID:       id,
-		Position: pos,
+		Mass:               1,
+		Lifetime:           50,
+		Temperature:        8500,
+		Luminosity:         1,
+		HabitableRadius:    1,
+		LightBalanceRadius: 1,
+		DysonRadius:        10,
+		OrbitScaler:        1,
+		ResourceCoef:       1,
+		Index:              id - 1,
+		Seed:               seed,
+		ID:                 id,
+		Position:           pos,
 	}
 	if galaxy.StarCount > 1 {
 		star.Level = float32(star.Index) / float32(galaxy.StarCount-1)

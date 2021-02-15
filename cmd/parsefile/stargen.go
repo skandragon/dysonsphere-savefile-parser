@@ -9,30 +9,30 @@ import (
 
 // StarData holds all the statistics for a single star.
 type StarData struct {
-	Index              int32
-	Level              float32
-	ID                 int32
-	Seed               int32
-	ResourceCoef       float32
-	Name               string
-	Position           *VectorLF3
-	UPosition          *VectorLF3
-	Mass               float32
-	Age                float32
-	Lifetime           float32
-	Temperature        float32
-	Type               StarType
-	Spectr             SpectralType
-	Color              float32
-	ClassFactor        float32
-	Luminosity         float32
-	Radius             float32
-	AcdiskRadius       float32
-	HabitableRadius    float32
-	LightBalanceRadius float32
-	OrbitScaler        float32
-	DysonRadius        float32
-	PhysicsRadius      float32
+	Index              int32        `json:"index"`
+	Level              float32      `json:"level"`
+	ID                 int32        `json:"id"`
+	Seed               int32        `json:"seed"`
+	ResourceCoef       float32      `json:"resource_coef"`
+	Name               string       `json:"name"`
+	Position           *VectorLF3   `json:"position"`
+	UPosition          *VectorLF3   `json:"u_position"`
+	Mass               float32      `json:"mass"`
+	Age                float32      `json:"age"`
+	Lifetime           float32      `json:"lifetime"`
+	Temperature        float32      `json:"temperature"`
+	Type               StarType     `json:"type"`
+	Spectr             SpectralType `json:"spectr"`
+	Color              float32      `json:"color"`
+	ClassFactor        float32      `json:"class_factor"`
+	Luminosity         float32      `json:"luminosity"`
+	Radius             float32      `json:"radius"`
+	AcdiskRadius       float32      `json:"acdisk_radius"`
+	HabitableRadius    float32      `json:"habitable_radius"`
+	LightBalanceRadius float32      `json:"light_balance_radius"`
+	OrbitScaler        float32      `json:"orbit_scaler"`
+	DysonRadius        float32      `json:"dyson_radius"`
+	PhysicsRadius      float32      `json:"physics_radius"`
 }
 
 // Make the special starting star.

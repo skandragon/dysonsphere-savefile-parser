@@ -1,13 +1,26 @@
 package main
 
-func parseStationStore(b *Buffer) {
+// StationStore holds the current status of a station's item storage
+type StationStore struct {
+	ItemID      int32
+	Count       int32
+	Max         int32
+	LocalOrder  int32
+	RemoteOrder int32
+	LocalLogic  LogisticStorageType
+	RemoteLogic LogisticStorageType
+}
+
+func parseStationStore(b *Buffer) *StationStore {
 	checkVers(b, 0, "StationStore")
 
-	b.GetInt32le() // itemId = r.ReadInt32();
-	b.GetInt32le() // count = r.ReadInt32();
-	b.GetInt32le() // localOrder = r.ReadInt32();
-	b.GetInt32le() // remoteOrder = r.ReadInt32();
-	b.GetInt32le() // max = r.ReadInt32();
-	b.GetInt32le() // localLogic = (ELogisticStorage)r.ReadInt32();
-	b.GetInt32le() // remoteLogic = (ELogisticStorage)r.ReadInt32();
+	return &StationStore{
+		ItemID:      b.GetInt32le(),
+		Count:       b.GetInt32le(),
+		LocalOrder:  b.GetInt32le(),
+		RemoteOrder: b.GetInt32le(),
+		Max:         b.GetInt32le(),
+		LocalLogic:  LogisticStorageType(b.GetInt32le()),
+		RemoteLogic: LogisticStorageType(b.GetInt32le()),
+	}
 }

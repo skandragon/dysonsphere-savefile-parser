@@ -21,11 +21,12 @@ func (e *EntityAnimation) String() string {
 
 // PlanetFactory holds information about a single planet's factories.
 type PlanetFactory struct {
-	PlanetID     int32              `json:"planet_id"`
-	Star         int32              `json:"star"`
-	PlanetNumber int32              `json:"planet_number"`
-	Runtime      *PlanetDataRuntime `json:"runtime"`
-	Veins        []*VeinData        `json:"veins"`
+	PlanetID        int32              `json:"planet_id"`
+	Star            int32              `json:"star"`
+	PlanetNumber    int32              `json:"planet_number"`
+	Runtime         *PlanetDataRuntime `json:"runtime"`
+	Veins           []*VeinData        `json:"veins"`
+	PlanetTransport *PlanetTransport   `json:"planet_transport"`
 }
 
 func parsePlanetFactory(b *Buffer, i int) *PlanetFactory {
@@ -137,7 +138,7 @@ func parsePlanetFactory(b *Buffer, i int) *PlanetFactory {
 	parseFactoryStorage(b)
 	parsePowerSystem(b)
 	parseFactorySystem(b)
-	parsePlanetTransport(b)
+	pf.PlanetTransport = parsePlanetTransport(b)
 	parseMonsterSystem(b)
 	parsePlatformSystem(b)
 

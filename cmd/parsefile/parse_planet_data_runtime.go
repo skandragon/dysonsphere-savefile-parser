@@ -41,7 +41,7 @@ func parsePlanetDataRuntime(b *Buffer) *PlanetDataRuntime {
 	for i := 0; int32(i) < veinGroupCount; i++ {
 		veinGroups[i] = &VeinGroup{
 			Type:     VeinType(b.GetInt32le()),
-			Position: ParsePositionSingle(b),
+			Position: ParseVector3(b),
 			Count:    b.GetInt32le(),
 			Amount:   b.GetInt64le(),
 		}

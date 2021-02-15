@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/skandragon/dysonsphere/internal/cs"
 )
@@ -768,6 +769,26 @@ var (
 		"WOH G64",
 		"XX Persei",
 	}
+
+	giantNameFormats = []string{
+		"HD %04d%02d",
+		"HDE %04d%02d",
+		"HR %04d",
+		"HV %04d",
+		"LBV %04d-%02d",
+		"NSV %04d",
+		"YSC %04d-%02d",
+	}
+
+	neutronStarNameFormats = []string{
+		"NTR J%02d%02d+%02d",
+		"NTR J%02d%02d-%02d",
+	}
+
+	blackHoleNameFormats = []string{
+		"DSR J%02d%02d+%02d",
+		"DSR J%02d%02d-%02d",
+	}
 )
 
 func randomName(seed int32) string {
@@ -880,20 +901,46 @@ func randomGiantStarNameFromRawNames(seed int32) string {
 	return rawGiantNames[num]
 }
 
-// TODO: implement these...
-
 func randomGiantStarNameWithConstellationAlpha(seed int32) string {
-	return "randomGiantStarNameWithConstellationAlpha"
+	random := cs.MakePRNGSequence(seed)
+	num := random.Next()
+	num2 := random.NextRange(15, 26)
+	num3 := random.NextRange(0, 26)
+	num %= int32(len(constellations))
+	c := 65 + num2 + 65 + num3
+	return fmt.Sprintf("%d %s", c, constellations[num])
 }
 
 func randomGiantStarNameWithFormat(seed int32) string {
-	return "randomGiantStarNameWithFormat"
+	random := cs.MakePRNGSequence(seed)
+	num := random.Next()
+	num2 := random.NextWithMax(10000)
+	num3 := random.NextWithMax(100)
+	num %= int32(len(giantNameFormats))
+	f := giantNameFormats[num]
+	if strings.Count(f, "%") == 2 {
+		return fmt.Sprintf(giantNameFormats[num], num2, num3)
+	} else {
+		return fmt.Sprintf(giantNameFormats[num], num2)
+	}
 }
 
 func randomNeutronStarNameWithFormat(seed int32) string {
-	return "randomNeutronStarNameWithFormat"
+	random := cs.MakePRNGSequence(seed)
+	num := random.Next()
+	num2 := random.NextWithMax(24)
+	num3 := random.NextWithMax(60)
+	num4 := random.NextRange(0, 60)
+	num %= int32(len(neutronStarNameFormats))
+	return fmt.Sprintf(neutronStarNameFormats[num], num2, num3, num4)
 }
 
 func randomBlackHoleNameWithFormat(seed int32) string {
-	return "randomBlackHoleNameWithFormat"
+	random := cs.MakePRNGSequence(seed)
+	num := random.Next()
+	num2 := random.NextWithMax(24)
+	num3 := random.NextWithMax(60)
+	num4 := random.NextRange(0, 60)
+	num %= int32(len(blackHoleNameFormats))
+	return fmt.Sprintf(blackHoleNameFormats[num], num2, num3, num4)
 }

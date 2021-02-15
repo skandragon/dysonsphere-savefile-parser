@@ -1,4 +1,4 @@
-package main
+package types
 
 // LogisticStorageType holds the request/supply status.
 type LogisticStorageType int32

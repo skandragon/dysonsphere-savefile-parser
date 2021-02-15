@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/skandragon/dysonsphere/internal/cs"
+	"github.com/skandragon/dysonsphere/types"
 )
 
 var (
@@ -842,7 +843,7 @@ func randomStarNameInternal(seed int32, star *StarData) string {
 	seed2 := random.Next()
 	num := random.NextDouble()
 	num2 := random.NextDouble()
-	if star.Type == StarTypeGiantStar {
+	if star.Type == types.StarTypeGiantStar {
 		if num2 < 0.4000000059604645 {
 			return randomGiantStarNameFromRawNames(seed2)
 		}
@@ -851,10 +852,10 @@ func randomStarNameInternal(seed int32, star *StarData) string {
 		}
 		return randomGiantStarNameWithFormat(seed2)
 	}
-	if star.Type == StarTypeNeutronStar {
+	if star.Type == types.StarTypeNeutronStar {
 		return randomNeutronStarNameWithFormat(seed2)
 	}
-	if star.Type == StarTypeBlackHole {
+	if star.Type == types.StarTypeBlackHole {
 		return randomBlackHoleNameWithFormat(seed2)
 	}
 	if num < 0.6000000238418579 {

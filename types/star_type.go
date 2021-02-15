@@ -1,4 +1,4 @@
-package main
+package types
 
 // StarType describes the type of star.
 type StarType int32

@@ -3,23 +3,25 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"github.com/skandragon/dysonsphere/types"
 )
 
 // VeinData holds information about a specific vein node,
 // which has a position, a list of miners, etc.
 type VeinData struct {
-	ID         int32    `json:"id"`
-	Type       VeinType `json:"type"`
-	ModelIndex int16    `json:"model_index,omitempty"`
-	GroupIndex int16    `json:"group_index,omitempty"`
-	Amount     int32    `json:"amount"`
-	ProductID  int32    `json:"product_id,omitempty"`
-	Position   *Vector3 `json:"-"`
-	MinerCount int32    `json:"miner_count"`
-	MinerID0   int32    `json:"miner_id_0,omitempty"`
-	MinerID1   int32    `json:"miner_id_1,omitempty"`
-	MinerID2   int32    `json:"miner_id_2,omitempty"`
-	MinerID3   int32    `json:"miner_id_3,omitempty"`
+	ID         int32          `json:"id"`
+	Type       types.VeinType `json:"type"`
+	ModelIndex int16          `json:"model_index,omitempty"`
+	GroupIndex int16          `json:"group_index,omitempty"`
+	Amount     int32          `json:"amount"`
+	ProductID  int32          `json:"product_id,omitempty"`
+	Position   *Vector3       `json:"-"`
+	MinerCount int32          `json:"miner_count"`
+	MinerID0   int32          `json:"miner_id_0,omitempty"`
+	MinerID1   int32          `json:"miner_id_1,omitempty"`
+	MinerID2   int32          `json:"miner_id_2,omitempty"`
+	MinerID3   int32          `json:"miner_id_3,omitempty"`
 }
 
 func (vd *VeinData) isJunk() bool {
@@ -61,7 +63,7 @@ func parseVeinData(b *Buffer) *VeinData {
 
 	return &VeinData{
 		ID:         b.GetInt32le(),
-		Type:       VeinType(b.GetInt16le()),
+		Type:       types.VeinType(b.GetInt16le()),
 		ModelIndex: b.GetInt16le(),
 		GroupIndex: b.GetInt16le(),
 		Amount:     b.GetInt32le(),

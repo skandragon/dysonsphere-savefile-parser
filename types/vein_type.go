@@ -1,4 +1,4 @@
-package main
+package types
 
 // VeinType describes the type of material that can be extracted.
 type VeinType int32

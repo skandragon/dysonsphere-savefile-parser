@@ -1,4 +1,4 @@
-package main
+package types
 
 // PlanetType indicates the type of the planet's surface.
 type PlanetType int32

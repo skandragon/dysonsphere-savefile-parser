@@ -1,4 +1,4 @@
-package main
+package types
 
 //MinerType indicates what type of thing a miner is.
 type MinerType int32

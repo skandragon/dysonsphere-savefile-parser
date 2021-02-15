@@ -5,6 +5,7 @@ import (
 
 	"github.com/skandragon/dysonsphere/internal/cs"
 	"github.com/skandragon/dysonsphere/internal/cs/mathf"
+	"github.com/skandragon/dysonsphere/types"
 )
 
 // Universe -- star data, which is all auto-generated, not loaded
@@ -61,22 +62,22 @@ func MakeUniverse(gd *GameDesc) *Universe {
 			star := makeBirthStar(seed2, universe)
 			universe.Stars = append(universe.Stars, star)
 		} else {
-			needSpectr := SpectralTypeX
+			needSpectr := types.SpectralTypeX
 			if i == 3 {
-				needSpectr = SpectralTypeM
+				needSpectr = types.SpectralTypeM
 			} else if i == num12-1 {
-				needSpectr = SpectralTypeO
+				needSpectr = types.SpectralTypeO
 			}
-			needType := StarTypeMainSeqStar
+			needType := types.StarTypeMainSeqStar
 			if i%num13 == num14 {
-				needType = StarTypeGiantStar
+				needType = types.StarTypeGiantStar
 			}
 			if i >= num10 {
-				needType = StarTypeBlackHole
+				needType = types.StarTypeBlackHole
 			} else if i >= num11 {
-				needType = StarTypeNeutronStar
+				needType = types.StarTypeNeutronStar
 			} else if i >= num12 {
-				needType = StarTypeWhiteDwarf
+				needType = types.StarTypeWhiteDwarf
 			}
 			star := createStar(universe, tmpPoses[i], i+1, seed2, needType, needSpectr)
 			universe.Stars = append(universe.Stars, star)

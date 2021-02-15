@@ -1,4 +1,4 @@
-package main
+package types
 
 // StorageType indicates the type of storage slot, I suppose?
 type StorageType int32

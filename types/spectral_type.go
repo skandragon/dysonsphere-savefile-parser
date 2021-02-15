@@ -1,4 +1,4 @@
-package main
+package types
 
 // SpectralType holds the spectral class of the star.
 type SpectralType int32

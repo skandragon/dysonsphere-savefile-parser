@@ -1,17 +1,19 @@
 package main
 
+import "github.com/skandragon/dysonsphere/types"
+
 // VeinSummary is a list of type to total amounts
 type VeinSummary struct {
-	Type   VeinType `json:"type"`
-	Amount int64    `json:"amount"`
+	Type   types.VeinType `json:"type"`
+	Amount int64          `json:"amount"`
 }
 
 // VeinGroup is a single value representation of a group of veins
 type VeinGroup struct {
-	Type     VeinType `json:"type"`
-	Position *Vector3 `json:"-"`
-	Count    int32    `json:"count"`
-	Amount   int64    `json:"amount"`
+	Type     types.VeinType `json:"type"`
+	Position *Vector3       `json:"-"`
+	Count    int32          `json:"count"`
+	Amount   int64          `json:"amount"`
 }
 
 // PlanetDataRuntime is data that is frequently updated.
@@ -30,7 +32,7 @@ func parsePlanetDataRuntime(b *Buffer) *PlanetDataRuntime {
 		amount := b.GetInt64le()
 		if amount > 0 {
 			resourceSummary = append(resourceSummary, &VeinSummary{
-				Type:   VeinType(i),
+				Type:   types.VeinType(i),
 				Amount: amount,
 			})
 		}
@@ -40,7 +42,7 @@ func parsePlanetDataRuntime(b *Buffer) *PlanetDataRuntime {
 	veinGroups := make([]*VeinGroup, veinGroupCount)
 	for i := 0; int32(i) < veinGroupCount; i++ {
 		veinGroups[i] = &VeinGroup{
-			Type:     VeinType(b.GetInt32le()),
+			Type:     types.VeinType(b.GetInt32le()),
 			Position: ParseVector3(b),
 			Count:    b.GetInt32le(),
 			Amount:   b.GetInt64le(),

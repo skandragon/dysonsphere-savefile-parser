@@ -5,34 +5,35 @@ import (
 
 	"github.com/skandragon/dysonsphere/internal/cs"
 	"github.com/skandragon/dysonsphere/internal/cs/mathf"
+	"github.com/skandragon/dysonsphere/types"
 )
 
 // StarData holds all the statistics for a single star.
 type StarData struct {
-	Index              int32        `json:"index"`
-	Level              float32      `json:"level"`
-	ID                 int32        `json:"id"`
-	Seed               int32        `json:"seed"`
-	ResourceCoef       float32      `json:"resource_coef"`
-	Name               string       `json:"name"`
-	Position           *VectorLF3   `json:"position"`
-	UPosition          *VectorLF3   `json:"u_position"`
-	Mass               float32      `json:"mass"`
-	Age                float32      `json:"age"`
-	Lifetime           float32      `json:"lifetime"`
-	Temperature        float32      `json:"temperature"`
-	Type               StarType     `json:"type"`
-	Spectr             SpectralType `json:"spectr"`
-	Color              float32      `json:"color"`
-	ClassFactor        float32      `json:"class_factor"`
-	Luminosity         float32      `json:"luminosity"`
-	Radius             float32      `json:"radius"`
-	AcdiskRadius       float32      `json:"acdisk_radius"`
-	HabitableRadius    float32      `json:"habitable_radius"`
-	LightBalanceRadius float32      `json:"light_balance_radius"`
-	OrbitScaler        float32      `json:"orbit_scaler"`
-	DysonRadius        float32      `json:"dyson_radius"`
-	PhysicsRadius      float32      `json:"physics_radius"`
+	Index              int32              `json:"index"`
+	Level              float32            `json:"level"`
+	ID                 int32              `json:"id"`
+	Seed               int32              `json:"seed"`
+	ResourceCoef       float32            `json:"resource_coef"`
+	Name               string             `json:"name"`
+	Position           *VectorLF3         `json:"position"`
+	UPosition          *VectorLF3         `json:"u_position"`
+	Mass               float32            `json:"mass"`
+	Age                float32            `json:"age"`
+	Lifetime           float32            `json:"lifetime"`
+	Temperature        float32            `json:"temperature"`
+	Type               types.StarType     `json:"type"`
+	Spectr             types.SpectralType `json:"spectr"`
+	Color              float32            `json:"color"`
+	ClassFactor        float32            `json:"class_factor"`
+	Luminosity         float32            `json:"luminosity"`
+	Radius             float32            `json:"radius"`
+	AcdiskRadius       float32            `json:"acdisk_radius"`
+	HabitableRadius    float32            `json:"habitable_radius"`
+	LightBalanceRadius float32            `json:"light_balance_radius"`
+	OrbitScaler        float32            `json:"orbit_scaler"`
+	DysonRadius        float32            `json:"dyson_radius"`
+	PhysicsRadius      float32            `json:"physics_radius"`
 }
 
 // Make the special starting star.
@@ -84,7 +85,7 @@ func makeBirthStar(seed int32, universe UniqueStarnameChecker) *StarData {
 	} else if num6 < -4.0 {
 		num6 = -4.0
 	}
-	star.Spectr = SpectralType(mathf.RoundToInt(float32(num6) + 4))
+	star.Spectr = types.SpectralType(mathf.RoundToInt(float32(num6) + 4))
 	star.Color = mathf.Clamp01((float32(num6) + 3.5) * 0.2)
 	star.ClassFactor = float32(num6)
 	star.Luminosity = mathf.Pow(num5, 0.7)
@@ -113,8 +114,8 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 	star.Age = age
 	if age >= 1 {
 		if star.Mass >= 18 {
-			star.Type = StarTypeBlackHole
-			star.Spectr = SpectralTypeX
+			star.Type = types.StarTypeBlackHole
+			star.Spectr = types.SpectralTypeX
 			star.Mass *= 2.5 * num2
 			star.Radius *= 1
 			star.AcdiskRadius = star.Radius * 5
@@ -123,8 +124,8 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 			star.HabitableRadius = 0
 			star.LightBalanceRadius *= 0.4 * num
 		} else if star.Mass >= 7 {
-			star.Type = StarTypeNeutronStar
-			star.Spectr = SpectralTypeX
+			star.Type = types.StarTypeNeutronStar
+			star.Spectr = types.SpectralTypeX
 			star.Mass *= 0.2 * num
 			star.Radius *= 0.15
 			star.AcdiskRadius = star.Radius * 9
@@ -134,8 +135,8 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 			star.LightBalanceRadius *= 3 * num
 			star.OrbitScaler *= 1.5 * num
 		} else {
-			star.Type = StarTypeWhiteDwarf
-			star.Spectr = SpectralTypeX
+			star.Type = types.StarTypeWhiteDwarf
+			star.Spectr = types.SpectralTypeX
 			star.Mass *= 0.2 * num
 			star.Radius *= 0.2
 			star.AcdiskRadius = 0
@@ -150,7 +151,7 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 			num4 = float32((mathf.Log(num4*0.1) + 1) * 10)
 		}
 		num5 := float32(1 - mathf.Pow(star.Age, 30)*0.5)
-		star.Type = StarTypeGiantStar
+		star.Type = types.StarTypeGiantStar
 		star.Mass = num5 * star.Mass
 		star.Radius = num4 * num2
 		star.AcdiskRadius = 0
@@ -162,7 +163,7 @@ func setStarAge(star *StarData, age float32, rn float64, rt float64) {
 	}
 }
 
-func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType StarType, needSpectr SpectralType) *StarData {
+func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType types.StarType, needSpectr types.SpectralType) *StarData {
 	star := &StarData{
 		Mass:               1,
 		Lifetime:           50,
@@ -212,7 +213,7 @@ func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType
 	}
 	standardDeviation := float32(0.33)
 
-	if needType == StarTypeGiantStar {
+	if needType == types.StarTypeGiantStar {
 		if num8 <= -0.08 {
 			num10 = 1.6
 		} else {
@@ -221,20 +222,20 @@ func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType
 		standardDeviation = 0.3
 	}
 	num11 := randNormal(num10, standardDeviation, num3, num4)
-	if needSpectr == SpectralTypeM {
+	if needSpectr == types.SpectralTypeM {
 		num11 = -3
-	} else if needSpectr == SpectralTypeO {
+	} else if needSpectr == types.SpectralTypeO {
 		num11 = 3
 	}
 	if num11 > 0 {
 		num11 *= 2
 	}
 	num11 = mathf.Clamp(num11, -2.4, 4.65) + float32(num6) + 1
-	if needType == StarTypeBlackHole {
+	if needType == types.StarTypeBlackHole {
 		star.Mass = 18 + float32(num3*num4)*30
-	} else if needType == StarTypeNeutronStar {
+	} else if needType == types.StarTypeNeutronStar {
 		star.Mass = 7 + float32(num3)*11
-	} else if needType == StarTypeWhiteDwarf {
+	} else if needType == types.StarTypeWhiteDwarf {
 		star.Mass = 1 + float32(num4)*5
 	} else {
 		star.Mass = mathf.Pow(2, num11)
@@ -244,14 +245,14 @@ func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType
 		d = 2 + 0.4*(1-float64(star.Mass))
 	}
 	star.Lifetime = float32(10000.0 * math.Pow(0.1, math.Log10(float64(star.Mass)*0.5)/math.Log10(d)+1) * num7)
-	if needType == StarTypeGiantStar {
+	if needType == types.StarTypeGiantStar {
 		star.Lifetime = float32(10000.0 * math.Pow(0.1, math.Log10(float64(star.Mass)*0.58)/math.Log10(d)+1) * num7)
 		star.Age = float32(num5)*0.04 + 0.96
-	} else if needType == StarTypeBlackHole || needType == StarTypeNeutronStar || needType == StarTypeWhiteDwarf {
+	} else if needType == types.StarTypeBlackHole || needType == types.StarTypeNeutronStar || needType == types.StarTypeWhiteDwarf {
 		star.Age = float32(num5)*0.4 + 1
-		if needType == StarTypeWhiteDwarf {
+		if needType == types.StarTypeWhiteDwarf {
 			star.Lifetime += 10000
-		} else if needType == StarTypeNeutronStar {
+		} else if needType == types.StarTypeNeutronStar {
 			star.Lifetime += 1000
 		}
 	} else if star.Mass < 0.5 {
@@ -284,7 +285,7 @@ func createStar(galaxy *Universe, pos *VectorLF3, id int32, seed int32, needType
 	} else if num15 < -4 {
 		num15 = -4
 	}
-	star.Spectr = SpectralType(mathf.RoundToInt(float32(num15) + 4))
+	star.Spectr = types.SpectralType(mathf.RoundToInt(float32(num15) + 4))
 	star.Color = mathf.Clamp01((float32(num15) + 3.5) * 0.2)
 	star.ClassFactor = float32(num15)
 	star.Luminosity = mathf.Pow(num14, 0.7)

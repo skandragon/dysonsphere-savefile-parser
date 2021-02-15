@@ -7,6 +7,7 @@ type StationComponent struct {
 	IsStellar             bool            `json:"is_stellar"`
 	Name                  string          `json:"name"`
 	Energy                int64           `json:"energy"`
+	EnergyMax             int64           `json:"energy_max"`
 	WarperCount           int32           `json:"warper_count"`
 	WarperMaxCount        int32           `json:"warper_max_count"`
 	IdleDroneCount        int32           `json:"idle_drone_count"`
@@ -14,7 +15,7 @@ type StationComponent struct {
 	IdleShipCount         int32           `json:"idle_ship_count"`
 	WorkShipCount         int32           `json:"work_ship_count"`
 	IsCollector           bool            `json:"is_collector"`
-	CollectionIDs         []int32         `json:"collection_i_ds"`
+	CollectionIDs         []int32         `json:"collection_ids"`
 	CollectionPerTick     []float32       `json:"collection_per_tick"`
 	CurrentCollections    []float32       `json:"current_collections"`
 	CollectSpeed          int32           `json:"collect_speed"`
@@ -32,37 +33,34 @@ func parseStationComponent(b *Buffer) *StationComponent {
 	checkVers(b, 2, "StationComponent")
 	station := &StationComponent{}
 
-	station.ID = b.GetInt32le()        // id = r.ReadInt32();
-	station.GID = b.GetInt32le()       // gid = r.ReadInt32();
-	b.GetInt32le()                     // entityId = r.ReadInt32();
-	station.PlanetID = b.GetInt32le()  // planetId = r.ReadInt32();
-	b.GetInt32le()                     // pcId = r.ReadInt32();
-	b.GetInt32le()                     // gene = r.ReadInt32();
-	b.GetFloat32()                     // droneDock.x = r.ReadSingle();
-	b.GetFloat32()                     // droneDock.y = r.ReadSingle();
-	b.GetFloat32()                     // droneDock.z = r.ReadSingle();
-	b.GetFloat32()                     // shipDockPos.x = r.ReadSingle();
-	b.GetFloat32()                     // shipDockPos.y = r.ReadSingle();
-	b.GetFloat32()                     // shipDockPos.z = r.ReadSingle();
-	b.GetFloat32()                     // shipDockRot.x = r.ReadSingle();
-	b.GetFloat32()                     // shipDockRot.y = r.ReadSingle();
-	b.GetFloat32()                     // shipDockRot.z = r.ReadSingle();
-	b.GetFloat32()                     // shipDockRot.w = r.ReadSingle();
-	station.IsStellar = b.GetBoolean() // isStellar = r.ReadBoolean();
-	//fmt.Printf("Station (%d,%d): isStellar=%v\n", id, gid, isStellar)
+	station.ID = b.GetInt32le()
+	station.GID = b.GetInt32le()
+	b.GetInt32le() // entityId = r.ReadInt32();
+	station.PlanetID = b.GetInt32le()
+	b.GetInt32le() // pcId = r.ReadInt32();
+	b.GetInt32le() // gene = r.ReadInt32();
+	b.GetFloat32() // droneDock.x = r.ReadSingle();
+	b.GetFloat32() // droneDock.y = r.ReadSingle();
+	b.GetFloat32() // droneDock.z = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.x = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.y = r.ReadSingle();
+	b.GetFloat32() // shipDockPos.z = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.x = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.y = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.z = r.ReadSingle();
+	b.GetFloat32() // shipDockRot.w = r.ReadSingle();
+	station.IsStellar = b.GetBoolean()
 	hasName := b.GetInt32le()
 	if hasName > 0 {
-		station.Name = b.GetString() // name = r.ReadString();
-		//fmt.Printf("Station (%d,%d) name: %s\n", id, gid, name)
+		station.Name = b.GetString()
 	}
-	station.Energy = b.GetInt64le()         // energy = r.ReadInt64();
-	b.GetInt64le()                          // energyPerTick = r.ReadInt64();
-	b.GetInt64le()                          // energyMax = r.ReadInt64();
-	station.WarperCount = b.GetInt32le()    // warperCount = r.ReadInt32();
-	station.WarperMaxCount = b.GetInt32le() // warperMaxCount = r.ReadInt32();
-	station.IdleDroneCount = b.GetInt32le() // idleDroneCount = r.ReadInt32();
+	station.Energy = b.GetInt64le()
+	b.GetInt64le() // energyPerTick = r.ReadInt64();
+	station.EnergyMax = b.GetInt64le()
+	station.WarperCount = b.GetInt32le()
+	station.WarperMaxCount = b.GetInt32le()
+	station.IdleDroneCount = b.GetInt32le()
 	station.WorkDroneCount = b.GetInt32le()
-	//fmt.Printf("Drones: %d idle, %d working\n", idleDroneCount, workDroneCount)
 	b.GetInt32le() // workDroneDatas.Length
 	for i := int32(0); i < station.WorkDroneCount; i++ {
 		parseDroneData(b)
@@ -70,9 +68,8 @@ func parseStationComponent(b *Buffer) *StationComponent {
 	for i := int32(0); i < station.WorkDroneCount; i++ {
 		parseLocalLogisticOrder(b)
 	}
-	station.IdleShipCount = b.GetInt32le() // idleShipCount = r.ReadInt32();
-	station.WorkShipCount = b.GetInt32le() // workShipCount = r.ReadInt32();
-	//fmt.Printf("Ships: %d idle, %d working\n", idleShipCount, workShipCount)
+	station.IdleShipCount = b.GetInt32le()
+	station.WorkShipCount = b.GetInt32le()
 	b.GetInt64le() // idleShipIndices = r.ReadUInt64();
 	b.GetInt64le() // workShipIndices = r.ReadUInt64();
 	b.GetInt32le() // workShipDatas.Length

@@ -22,6 +22,20 @@ type VeinData struct {
 	MinerID3   int32    `json:"miner_id_3,omitempty"`
 }
 
+func (vd *VeinData) isJunk() bool {
+	return vd.ID == 0 && vd.Amount == 0
+}
+
+func compressVeinDataSlice(l []*VeinData) []*VeinData {
+	ll := make([]*VeinData, 0)
+	for _, vd := range l {
+		if vd != nil && !vd.isJunk() {
+			ll = append(ll, vd)
+		}
+	}
+	return ll
+}
+
 func (vd *VeinData) String() string {
 	r := []string{
 		fmt.Sprintf("ID=%d", vd.ID),

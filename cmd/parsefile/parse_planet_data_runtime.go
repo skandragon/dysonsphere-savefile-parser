@@ -46,9 +46,20 @@ func parsePlanetDataRuntime(b *Buffer) *PlanetDataRuntime {
 			Amount:   b.GetInt64le(),
 		}
 	}
+	veinGroups = compressVeinGroups(veinGroups)
 
 	return &PlanetDataRuntime{
 		VeinSummaries: resourceSummary,
 		VeinGroups:    veinGroups,
 	}
+}
+
+func compressVeinGroups(i []*VeinGroup) []*VeinGroup {
+	o := make([]*VeinGroup, 0)
+	for _, vg := range i {
+		if vg != nil && vg.Amount > 0 {
+			o = append(o, vg)
+		}
+	}
+	return o
 }

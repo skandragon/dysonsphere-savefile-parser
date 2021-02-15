@@ -120,7 +120,7 @@ func parsePlanetFactory(b *Buffer, i int) *PlanetFactory {
 	for i := 1; int32(i) < veinCursor; i++ {
 		veins[i] = parseVeinData(b)
 	}
-	pf.Veins = veins
+	pf.Veins = compressVeinDataSlice(veins)
 	for i := 0; int32(i) < veinRecycleCursor; i++ {
 		b.GetInt32le() // veinRecycle
 	}

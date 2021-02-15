@@ -67,7 +67,7 @@ func MakeUniverse(gd *GameDesc) *Universe {
 			} else if i == num12-1 {
 				needSpectr = SpectralTypeO
 			}
-			needType := StarTypeGiantStar
+			needType := StarTypeMainSeqStar
 			if i%num13 == num14 {
 				needType = StarTypeGiantStar
 			}

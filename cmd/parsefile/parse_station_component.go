@@ -1,5 +1,6 @@
 package main
 
+// StationComponent describes a single planet/interplanetary/collector config and status
 type StationComponent struct {
 	ID                    int32           `json:"id"`
 	GID                   int32           `json:"gid"`

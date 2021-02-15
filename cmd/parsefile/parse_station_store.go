@@ -2,19 +2,21 @@ package main
 
 // StationStore holds the current status of a station's item storage
 type StationStore struct {
-	ItemID      int32
-	Count       int32
-	Max         int32
-	LocalOrder  int32
-	RemoteOrder int32
-	LocalLogic  LogisticStorageType
-	RemoteLogic LogisticStorageType
+	Index       int32               `json:"index"`
+	ItemID      int32               `json:"item_id"`
+	Count       int32               `json:"count"`
+	Max         int32               `json:"max"`
+	LocalOrder  int32               `json:"local_order"`
+	RemoteOrder int32               `json:"remote_order"`
+	LocalLogic  LogisticStorageType `json:"local_logic"`
+	RemoteLogic LogisticStorageType `json:"remote_logic"`
 }
 
-func parseStationStore(b *Buffer) *StationStore {
+func parseStationStore(b *Buffer, index int32) *StationStore {
 	checkVers(b, 0, "StationStore")
 
 	return &StationStore{
+		Index:       index,
 		ItemID:      b.GetInt32le(),
 		Count:       b.GetInt32le(),
 		LocalOrder:  b.GetInt32le(),

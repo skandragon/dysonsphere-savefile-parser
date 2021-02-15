@@ -1,35 +1,39 @@
 package main
 
+type StationCollection struct {
+	ItemID  int32   `json:"item_id"`
+	PerTick float32 `json:"per_tick"`
+	Current float32 `json:"current"`
+}
+
 // StationComponent describes a single planet/interplanetary/collector config and status
 type StationComponent struct {
-	ID                    int32           `json:"id"`
-	GID                   int32           `json:"gid"`
-	EntityID              int32           `json:"entity_id"`
-	PlanetID              int32           `json:"planet_id"`
-	IsStellar             bool            `json:"is_stellar"`
-	Name                  string          `json:"name"`
-	Energy                int64           `json:"energy"`
-	EnergyPerTick         int64           `json:"energy_per_tick"`
-	EnergyMax             int64           `json:"energy_max"`
-	WarperCount           int32           `json:"warper_count"`
-	WarperMaxCount        int32           `json:"warper_max_count"`
-	IdleDroneCount        int32           `json:"idle_drone_count"`
-	WorkDroneCount        int32           `json:"work_drone_count"`
-	IdleShipCount         int32           `json:"idle_ship_count"`
-	WorkShipCount         int32           `json:"work_ship_count"`
-	IsCollector           bool            `json:"is_collector"`
-	CollectionIDs         []int32         `json:"collection_ids,omitempty"`
-	CollectionPerTick     []float32       `json:"collection_per_tick,omitempty"`
-	CurrentCollections    []float32       `json:"current_collections,omitempty"`
-	CollectSpeed          int32           `json:"collect_speed"`
-	StationStores         []*StationStore `json:"station_stores"`
-	TripRangeDrones       float64         `json:"trip_range_drones"`
-	TripRangeShips        float64         `json:"trip_range_ships"`
-	IncludeOrbitCollector bool            `json:"include_orbit_collector"`
-	WarpEnableDist        float64         `json:"warp_enable_dist"`
-	WarperNecessary       bool            `json:"warper_necessary"`
-	DeliveryShips         int32           `json:"delivery_ships"`
-	DeliveryDrones        int32           `json:"delivery_drones"`
+	ID                    int32                `json:"id"`
+	GID                   int32                `json:"gid"`
+	EntityID              int32                `json:"entity_id"`
+	PlanetID              int32                `json:"planet_id"`
+	IsStellar             bool                 `json:"is_stellar"`
+	Name                  string               `json:"name"`
+	Energy                int64                `json:"energy"`
+	EnergyPerTick         int64                `json:"energy_per_tick"`
+	EnergyMax             int64                `json:"energy_max"`
+	WarperCount           int32                `json:"warper_count"`
+	WarperMaxCount        int32                `json:"warper_max_count"`
+	IdleDroneCount        int32                `json:"idle_drone_count"`
+	WorkDroneCount        int32                `json:"work_drone_count"`
+	IdleShipCount         int32                `json:"idle_ship_count"`
+	WorkShipCount         int32                `json:"work_ship_count"`
+	IsCollector           bool                 `json:"is_collector"`
+	Collections           []*StationCollection `json:"collections,omitempty"`
+	CollectSpeed          int32                `json:"collect_speed"`
+	StationStores         []*StationStore      `json:"station_stores"`
+	TripRangeDrones       float64              `json:"trip_range_drones"`
+	TripRangeShips        float64              `json:"trip_range_ships"`
+	IncludeOrbitCollector bool                 `json:"include_orbit_collector"`
+	WarpEnableDist        float64              `json:"warp_enable_dist"`
+	WarperNecessary       bool                 `json:"warper_necessary"`
+	DeliveryShips         int32                `json:"delivery_ships"`
+	DeliveryDrones        int32                `json:"delivery_drones"`
 }
 
 func parseStationComponent(b *Buffer) *StationComponent {
@@ -85,7 +89,10 @@ func parseStationComponent(b *Buffer) *StationComponent {
 	stationStoreCount := b.GetInt32le()
 	station.StationStores = make([]*StationStore, 0)
 	for i := int32(0); i < stationStoreCount; i++ {
-		station.StationStores = append(station.StationStores, parseStationStore(b))
+		store := parseStationStore(b, i)
+		if store.ItemID > 0 {
+			station.StationStores = append(station.StationStores, store)
+		}
 	}
 	slotCount := b.GetInt32le()
 	for i := int32(0); i < slotCount; i++ {
@@ -99,23 +106,8 @@ func parseStationComponent(b *Buffer) *StationComponent {
 	b.GetInt32le() // nextShipIndex = r.ReadInt32();
 	station.IsCollector = b.GetBoolean()
 
-	collectionIDsLength := b.GetInt32le()
-	station.CollectionIDs = make([]int32, int(collectionIDsLength))
-	for i := int32(0); i < collectionIDsLength; i++ {
-		station.CollectionIDs[i] = b.GetInt32le()
-	}
+	station.Collections = parseStationCollections(b)
 
-	collectionPerTickLength := b.GetInt32le()
-	station.CollectionPerTick = make([]float32, int(collectionPerTickLength))
-	for i := int32(0); i < collectionPerTickLength; i++ {
-		station.CollectionPerTick[i] = b.GetFloat32()
-	}
-
-	currentCollectionsLength := b.GetInt32le()
-	station.CurrentCollections = make([]float32, int(currentCollectionsLength))
-	for i := int32(0); i < currentCollectionsLength; i++ {
-		station.CurrentCollections[i] = b.GetFloat32()
-	}
 	station.CollectSpeed = b.GetInt32le()
 	station.TripRangeDrones = b.GetFloat64()
 	station.TripRangeShips = b.GetFloat64()
@@ -126,4 +118,47 @@ func parseStationComponent(b *Buffer) *StationComponent {
 	station.DeliveryShips = b.GetInt32le()
 
 	return station
+}
+
+func parseStationCollections(b *Buffer) []*StationCollection {
+	collectionIDsLength := b.GetInt32le()
+	ids := make([]int32, int(collectionIDsLength))
+	for i := int32(0); i < collectionIDsLength; i++ {
+		ids[i] = b.GetInt32le()
+	}
+
+	collectionPerTickLength := b.GetInt32le()
+	perTick := make([]float32, int(collectionPerTickLength))
+	for i := int32(0); i < collectionPerTickLength; i++ {
+		perTick[i] = b.GetFloat32()
+	}
+
+	currentCollectionsLength := b.GetInt32le()
+	current := make([]float32, int(currentCollectionsLength))
+	for i := int32(0); i < currentCollectionsLength; i++ {
+		current[i] = b.GetFloat32()
+	}
+
+	// Not sure what to do if these are not the same length.  For now, ignore the undefined ones...
+	count := collectionIDsLength
+	if collectionPerTickLength < count {
+		count = collectionPerTickLength
+	}
+	if currentCollectionsLength < count {
+		count = currentCollectionsLength
+	}
+
+	if count == 0 {
+		return nil
+	}
+
+	ret := make([]*StationCollection, count)
+	for i := int32(0); i < count; i++ {
+		ret[i] = &StationCollection{
+			ItemID:  ids[i],
+			PerTick: perTick[i],
+			Current: current[i],
+		}
+	}
+	return ret
 }

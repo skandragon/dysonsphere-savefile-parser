@@ -8,18 +8,18 @@ import (
 // VeinData holds information about a specific vein node,
 // which has a position, a list of miners, etc.
 type VeinData struct {
-	ID         int32           `json:"id"`
-	Type       VeinType        `json:"type"`
-	ModelIndex int16           `json:"model_index,omitempty"`
-	GroupIndex int16           `json:"group_index,omitempty"`
-	Amount     int32           `json:"amount"`
-	ProductID  int32           `json:"product_id,omitempty"`
-	Position   *PositionSingle `json:"-"`
-	MinerCount int32           `json:"miner_count"`
-	MinerID0   int32           `json:"miner_id_0,omitempty"`
-	MinerID1   int32           `json:"miner_id_1,omitempty"`
-	MinerID2   int32           `json:"miner_id_2,omitempty"`
-	MinerID3   int32           `json:"miner_id_3,omitempty"`
+	ID         int32    `json:"id"`
+	Type       VeinType `json:"type"`
+	ModelIndex int16    `json:"model_index,omitempty"`
+	GroupIndex int16    `json:"group_index,omitempty"`
+	Amount     int32    `json:"amount"`
+	ProductID  int32    `json:"product_id,omitempty"`
+	Position   *Vector3 `json:"-"`
+	MinerCount int32    `json:"miner_count"`
+	MinerID0   int32    `json:"miner_id_0,omitempty"`
+	MinerID1   int32    `json:"miner_id_1,omitempty"`
+	MinerID2   int32    `json:"miner_id_2,omitempty"`
+	MinerID3   int32    `json:"miner_id_3,omitempty"`
 }
 
 func (vd *VeinData) String() string {
@@ -52,7 +52,7 @@ func parseVeinData(b *Buffer) *VeinData {
 		GroupIndex: b.GetInt16le(),
 		Amount:     b.GetInt32le(),
 		ProductID:  b.GetInt32le(),
-		Position: &PositionSingle{
+		Position: &Vector3{
 			X: b.GetFloat32(),
 			Y: b.GetFloat32(),
 			Z: b.GetFloat32(),

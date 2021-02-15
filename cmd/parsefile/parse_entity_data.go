@@ -5,31 +5,32 @@ import (
 	"strings"
 )
 
+// EntityData holds Information about a thing.
 type EntityData struct {
-	Version       int32           `json:"version"`
-	ID            int32           `json:"id"`
-	ProtoID       int16           `json:"proto_id,omitempty"`
-	ModelIndex    int16           `json:"model_index,omitempty"`
-	Position      *PositionSingle `json:"position,omitempty"`
-	Rotation      *RotationSingle `json:"rotation,omitempty"`
-	BeltID        int32           `json:"belt_id,omitempty"`
-	SplitterID    int32           `json:"splitter_id,omitempty"`
-	StorageID     int32           `json:"storage_id,omitempty"`
-	TankID        int32           `json:"tank_id,omitempty"`
-	MinerID       int32           `json:"miner_id,omitempty"`
-	InserterID    int32           `json:"inserter_id,omitempty"`
-	AssemblerID   int32           `json:"assembler_id,omitempty"`
-	FractionateID int32           `json:"fractionate_id,omitempty"`
-	EjectorID     int32           `json:"ejector_id,omitempty"`
-	SiloID        int32           `json:"silo_id,omitempty"`
-	LabID         int32           `json:"lab_id,omitempty"`
-	StationID     int32           `json:"station_id,omitempty"`
-	PowerNodeID   int32           `json:"power_node_id,omitempty"`
-	PowerGenID    int32           `json:"power_gen_id,omitempty"`
-	PowerConID    int32           `json:"power_con_id,omitempty"`
-	PowerAccID    int32           `json:"power_acc_id,omitempty"`
-	PowerExcID    int32           `json:"power_exc_id,omitempty"`
-	MonsterID     int32           `json:"monster_id,omitempty"`
+	Version       int32       `json:"version"`
+	ID            int32       `json:"id"`
+	ProtoID       int16       `json:"proto_id,omitempty"`
+	ModelIndex    int16       `json:"model_index,omitempty"`
+	Position      *Vector3    `json:"position,omitempty"`
+	Rotation      *Quaternion `json:"rotation,omitempty"`
+	BeltID        int32       `json:"belt_id,omitempty"`
+	SplitterID    int32       `json:"splitter_id,omitempty"`
+	StorageID     int32       `json:"storage_id,omitempty"`
+	TankID        int32       `json:"tank_id,omitempty"`
+	MinerID       int32       `json:"miner_id,omitempty"`
+	InserterID    int32       `json:"inserter_id,omitempty"`
+	AssemblerID   int32       `json:"assembler_id,omitempty"`
+	FractionateID int32       `json:"fractionate_id,omitempty"`
+	EjectorID     int32       `json:"ejector_id,omitempty"`
+	SiloID        int32       `json:"silo_id,omitempty"`
+	LabID         int32       `json:"lab_id,omitempty"`
+	StationID     int32       `json:"station_id,omitempty"`
+	PowerNodeID   int32       `json:"power_node_id,omitempty"`
+	PowerGenID    int32       `json:"power_gen_id,omitempty"`
+	PowerConID    int32       `json:"power_con_id,omitempty"`
+	PowerAccID    int32       `json:"power_acc_id,omitempty"`
+	PowerExcID    int32       `json:"power_exc_id,omitempty"`
+	MonsterID     int32       `json:"monster_id,omitempty"`
 }
 
 func (e *EntityData) String() string {
@@ -107,12 +108,12 @@ func parseEntityData(b *Buffer) *EntityData {
 		ID:         b.GetInt32le(),
 		ProtoID:    b.GetInt16le(),
 		ModelIndex: b.GetInt16le(),
-		Position: &PositionSingle{
+		Position: &Vector3{
 			X: b.GetFloat32(),
 			Y: b.GetFloat32(),
 			Z: b.GetFloat32(),
 		},
-		Rotation: &RotationSingle{
+		Rotation: &Quaternion{
 			X: b.GetFloat32(),
 			Y: b.GetFloat32(),
 			Z: b.GetFloat32(),

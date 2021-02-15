@@ -1,5 +1,6 @@
 package main
 
+// GameDesc describes the initial starting conditions.
 type GameDesc struct {
 	GalaxyAlgo         int32   `json:"galaxy_algo"`
 	GalaxySeed         int32   `json:"galaxy_seed"`

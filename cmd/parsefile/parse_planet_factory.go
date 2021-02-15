@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// EntityAnimation holds the current state of an entity's animation logic.
 type EntityAnimation struct {
 	Time          float32
 	PrepareLength float32
@@ -18,6 +19,7 @@ func (e *EntityAnimation) String() string {
 		e.State, e.Power)
 }
 
+// PlanetFactory holds information about a single planet's factories.
 type PlanetFactory struct {
 	PlanetID     int32              `json:"planet_id"`
 	Star         int32              `json:"star"`

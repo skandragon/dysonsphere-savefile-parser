@@ -797,6 +797,7 @@ func randomName(seed int32) string {
 	return text
 }
 
+// UniqueStarnameChecker defines what a type needs to implement to allow checking for unique star names.
 type UniqueStarnameChecker interface {
 	UniqueStarname(string) bool
 }

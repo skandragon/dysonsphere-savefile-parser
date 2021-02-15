@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// GameHeader holds information about the game save file itself.
 type GameHeader struct {
 	GameVersion string `json:"game_version"`
 	GameTicks   int64  `json:"game_ticks"`

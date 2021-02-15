@@ -1,5 +1,6 @@
 package main
 
+// GameData holds top level game data, like the galaxy, factories, etc.
 type GameData struct {
 	Name            string           `json:"name"`
 	Descriptor      *GameDesc        `json:"descriptor"`

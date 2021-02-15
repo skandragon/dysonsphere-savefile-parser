@@ -2,6 +2,7 @@ package main
 
 import "io/ioutil"
 
+// GameFile represents the sections in the game file.
 type GameFile struct {
 	Header *GameHeader `json:"header"`
 	Data   *GameData   `json:"data"`

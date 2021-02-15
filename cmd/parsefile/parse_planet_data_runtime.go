@@ -1,17 +1,20 @@
 package main
 
+// VeinSummary is a list of type to total amounts
 type VeinSummary struct {
 	Type   VeinType `json:"type"`
 	Amount int64    `json:"amount"`
 }
 
+// VeinGroup is a single value representation of a group of veins
 type VeinGroup struct {
-	Type     VeinType        `json:"type"`
-	Position *PositionSingle `json:"-"`
-	Count    int32           `json:"count"`
-	Amount   int64           `json:"amount"`
+	Type     VeinType `json:"type"`
+	Position *Vector3 `json:"-"`
+	Count    int32    `json:"count"`
+	Amount   int64    `json:"amount"`
 }
 
+// PlanetDataRuntime is data that is frequently updated.
 type PlanetDataRuntime struct {
 	VeinSummaries []*VeinSummary `json:"vein_summaries"`
 	VeinGroups    []*VeinGroup   `json:"vein_groups"`

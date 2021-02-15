@@ -1,24 +1,56 @@
 package main
 
+// VeinType describes the type of material that can be extracted.
 type VeinType int32
 
 const (
-	VeinTypeNone     VeinType = 0
-	VeinTypeIron     VeinType = 1
-	VeinTypeCopper   VeinType = 2
+	// VeinTypeNone means the vein is toast, I suspect.
+	VeinTypeNone VeinType = 0
+
+	// VeinTypeIron - Iron Ore
+	VeinTypeIron VeinType = 1
+
+	// VeinTypeCopper - Copper Ore
+	VeinTypeCopper VeinType = 2
+
+	// VeinTypeSilicium - actually Silicon Ore
 	VeinTypeSilicium VeinType = 3
+
+	// VeinTypeTitanium - Titanium Ore
 	VeinTypeTitanium VeinType = 4
-	VeinTypeStone    VeinType = 5
-	VeinTypeCoal     VeinType = 6
-	VeinTypeOil      VeinType = 7
-	VeinTypeFireice  VeinType = 8
-	VeinTypeDiamond  VeinType = 9
-	VeinTypeFractal  VeinType = 10
-	VeinTypeCrysrub  VeinType = 11
-	VeinTypeGrat     VeinType = 12
-	VeinTypeBamboo   VeinType = 13
-	VeinTypeMag      VeinType = 14
-	VeinTypeMax      VeinType = 15
+
+	// VeinTypeStone - stone
+	VeinTypeStone VeinType = 5
+
+	// VeinTypeCoal - coal
+	VeinTypeCoal VeinType = 6
+
+	// VeinTypeOil - oil
+	VeinTypeOil VeinType = 7
+
+	// VeinTypeFireice - Fire Ice
+	VeinTypeFireice VeinType = 8
+
+	// VeinTypeDiamond - Kimberlite Ore
+	VeinTypeDiamond VeinType = 9
+
+	// VeinTypeFractal - Fractal Silicon
+	VeinTypeFractal VeinType = 10
+
+	// VeinTypeCrysrub - Organic Crystal
+	VeinTypeCrysrub VeinType = 11
+
+	// VeinTypeGrat - Optical Grating Crystal
+	VeinTypeGrat VeinType = 12
+
+	// VeinTypeBamboo - Spiniform Stalagmite Crystal
+	VeinTypeBamboo VeinType = 13
+
+	// VeinTypeMag -- Unipolar Magnet
+	VeinTypeMag VeinType = 14
+
+	// VeinTypeMax - the end of the types
+	VeinTypeMax VeinType = 15
 )
 
 func (t VeinType) String() string {
@@ -32,12 +64,12 @@ func (t VeinType) String() string {
 		"Coal",
 		"Oil",
 		"Fire Ice",
-		"Diamond",
-		"Fractal",
-		"Crysrub",
-		"Grat",
-		"Bamboo",
-		"Mag",
+		"Kimberlite Ore",
+		"Fractal Silicon",
+		"Fire Ice",
+		"Optical Grating Crystal",
+		"Spiniform Stalagmite Crystal",
+		"Unipolar Magnet",
 		"Max",
 	}[t]
 }

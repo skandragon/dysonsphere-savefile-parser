@@ -4,10 +4,12 @@ package main
 type StationComponent struct {
 	ID                    int32           `json:"id"`
 	GID                   int32           `json:"gid"`
+	EntityID              int32           `json:"entity_id"`
 	PlanetID              int32           `json:"planet_id"`
 	IsStellar             bool            `json:"is_stellar"`
 	Name                  string          `json:"name"`
 	Energy                int64           `json:"energy"`
+	EnergyPerTick         int64           `json:"energy_per_tick"`
 	EnergyMax             int64           `json:"energy_max"`
 	WarperCount           int32           `json:"warper_count"`
 	WarperMaxCount        int32           `json:"warper_max_count"`
@@ -16,9 +18,9 @@ type StationComponent struct {
 	IdleShipCount         int32           `json:"idle_ship_count"`
 	WorkShipCount         int32           `json:"work_ship_count"`
 	IsCollector           bool            `json:"is_collector"`
-	CollectionIDs         []int32         `json:"collection_ids"`
-	CollectionPerTick     []float32       `json:"collection_per_tick"`
-	CurrentCollections    []float32       `json:"current_collections"`
+	CollectionIDs         []int32         `json:"collection_ids,omitempty"`
+	CollectionPerTick     []float32       `json:"collection_per_tick,omitempty"`
+	CurrentCollections    []float32       `json:"current_collections,omitempty"`
 	CollectSpeed          int32           `json:"collect_speed"`
 	StationStores         []*StationStore `json:"station_stores"`
 	TripRangeDrones       float64         `json:"trip_range_drones"`
@@ -36,7 +38,7 @@ func parseStationComponent(b *Buffer) *StationComponent {
 
 	station.ID = b.GetInt32le()
 	station.GID = b.GetInt32le()
-	b.GetInt32le() // entityId = r.ReadInt32();
+	station.EntityID = b.GetInt32le()
 	station.PlanetID = b.GetInt32le()
 	b.GetInt32le() // pcId = r.ReadInt32();
 	b.GetInt32le() // gene = r.ReadInt32();
@@ -56,7 +58,7 @@ func parseStationComponent(b *Buffer) *StationComponent {
 		station.Name = b.GetString()
 	}
 	station.Energy = b.GetInt64le()
-	b.GetInt64le() // energyPerTick = r.ReadInt64();
+	station.EnergyPerTick = b.GetInt64le()
 	station.EnergyMax = b.GetInt64le()
 	station.WarperCount = b.GetInt32le()
 	station.WarperMaxCount = b.GetInt32le()

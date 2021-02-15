@@ -920,9 +920,8 @@ func randomGiantStarNameWithFormat(seed int32) string {
 	f := giantNameFormats[num]
 	if strings.Count(f, "%") == 2 {
 		return fmt.Sprintf(giantNameFormats[num], num2, num3)
-	} else {
-		return fmt.Sprintf(giantNameFormats[num], num2)
 	}
+	return fmt.Sprintf(giantNameFormats[num], num2)
 }
 
 func randomNeutronStarNameWithFormat(seed int32) string {

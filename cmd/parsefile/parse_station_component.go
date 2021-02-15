@@ -1,5 +1,6 @@
 package main
 
+// StationCollection describes an item this station is sucking down.
 type StationCollection struct {
 	ItemID  int32   `json:"item_id"`
 	PerTick float32 `json:"per_tick"`

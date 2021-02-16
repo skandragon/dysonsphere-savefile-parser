@@ -15,7 +15,7 @@ type VeinData struct {
 	ModelIndex int16          `json:"model_index,omitempty"`
 	GroupIndex int16          `json:"group_index,omitempty"`
 	Amount     int32          `json:"amount"`
-	ProductID  int32          `json:"product_id,omitempty"`
+	ProductID  types.ItemType `json:"product_id,omitempty"`
 	Position   *Vector3       `json:"-"`
 	MinerCount int32          `json:"miner_count"`
 	MinerID0   int32          `json:"miner_id_0,omitempty"`
@@ -45,7 +45,7 @@ func (vd *VeinData) String() string {
 		fmt.Sprintf("ModelIndex=%d", vd.ModelIndex),
 		fmt.Sprintf("GroupIndex=%d", vd.GroupIndex),
 		fmt.Sprintf("Amount=%d", vd.Amount),
-		fmt.Sprintf("ProductID=%d", vd.ProductID),
+		fmt.Sprintf("ProductID=%s", vd.ProductID),
 		fmt.Sprintf("Position=%s", vd.Position),
 		fmt.Sprintf("MinerCount=%d", vd.MinerCount),
 		fmt.Sprintf("MinerID0=%d", vd.MinerID0),
@@ -67,12 +67,8 @@ func parseVeinData(b *Buffer) *VeinData {
 		ModelIndex: b.GetInt16le(),
 		GroupIndex: b.GetInt16le(),
 		Amount:     b.GetInt32le(),
-		ProductID:  b.GetInt32le(),
-		Position: &Vector3{
-			X: b.GetFloat32(),
-			Y: b.GetFloat32(),
-			Z: b.GetFloat32(),
-		},
+		ProductID:  types.ItemType(b.GetInt32le()),
+		Position:   ParseVector3(b),
 		MinerCount: b.GetInt32le(),
 		MinerID0:   b.GetInt32le(),
 		MinerID1:   b.GetInt32le(),

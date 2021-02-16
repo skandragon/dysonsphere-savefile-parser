@@ -1,10 +1,12 @@
 package main
 
+import "github.com/skandragon/dysonsphere/types"
+
 // StationCollection describes an item this station is sucking down.
 type StationCollection struct {
-	ItemID  int32   `json:"item_id"`
-	PerTick float32 `json:"per_tick"`
-	Current float32 `json:"current"`
+	ItemID  types.ItemType `json:"item_id"`
+	PerTick float32        `json:"per_tick"`
+	Current float32        `json:"current"`
 }
 
 // StationComponent describes a single planet/interplanetary/collector config and status
@@ -123,9 +125,9 @@ func parseStationComponent(b *Buffer) *StationComponent {
 
 func parseStationCollections(b *Buffer) []*StationCollection {
 	collectionIDsLength := b.GetInt32le()
-	ids := make([]int32, int(collectionIDsLength))
+	ids := make([]types.ItemType, int(collectionIDsLength))
 	for i := int32(0); i < collectionIDsLength; i++ {
-		ids[i] = b.GetInt32le()
+		ids[i] = types.ItemType(b.GetInt32le())
 	}
 
 	collectionPerTickLength := b.GetInt32le()
